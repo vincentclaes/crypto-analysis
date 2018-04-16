@@ -12,6 +12,8 @@ from random import randrange as rr
 from random import choice, random
 import time
 
+from crypto_analysis.databases import conn
+
 from flask import (
     Flask,
     abort,
