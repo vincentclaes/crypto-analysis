@@ -154,4 +154,9 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-.gitignore
+
+.DS_Store
+.idea/crypto-analysis.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
