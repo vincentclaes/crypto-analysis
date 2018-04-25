@@ -33,4 +33,3 @@ class ConnectionSQLite(Connection):
 
         return None
 
-conn = Connection.get_connection('sqlite')

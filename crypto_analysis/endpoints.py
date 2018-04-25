@@ -2,27 +2,29 @@
 
 # -*- coding: utf-8 -*-
 
-from itertools import combinations
 import json
 import locale
+import logging
 import os
-from datetime import timedelta as td
-from datetime import datetime as dt
-from random import randrange as rr
-from random import choice, random
 import time
-
-from crypto_analysis.databases import conn
+from datetime import datetime as dt
+from datetime import timedelta as td
+from itertools import combinations
+from random import choice, random
+from random import randrange as rr
 
 from flask import (
     Flask,
     abort,
-    request,
     jsonify,
     render_template,
+    request
 )
 from flask_cors import CORS
 from flask_cors import cross_origin
+
+from crypto_analysis.databases import Connection
+from crypto_analysis.databases import queries
 
 app = Flask('endpoints_test')
 CORS(app)
@@ -34,6 +36,9 @@ STRESS_MAX_POINTS = 300
 locale.setlocale(locale.LC_ALL, '')
 
 cwd = os.getcwd()
+# cwd = os.path.dirname(os.path.realpath(__file__))
+
+DB = 'sqlite'
 
 
 def recursive_d3_data(current=0, max_iters=12, data=None):
@@ -76,6 +81,56 @@ def rand_hex_color():
         choice(chars),
         choice(chars),
     )
+
+
+def get_newcomer_for_uuid(conn, uuid, rank):
+    df_last = queries.get_data_for_uuid(conn, uuid, rank)
+    df_tail = queries.get_data_below_uuid(conn, uuid, rank)
+    newcomers = df_last[df_last["id"].isin(df_tail["id"])]
+    if newcomers.empty:
+        logging.info("no newcomers found for uuid {}".format(uuid))
+    return newcomers
+
+
+def get_newcomers(conn, rank, no=10):
+    uuids = queries.get_uuids(conn)
+    counter = 0
+    ret_val = {}
+    for uuid in uuids:
+        newcomer = get_newcomer_for_uuid(conn, uuid, rank)
+        if newcomer.empty:
+            continue
+        for index, row in newcomer.iterrows():
+            ret_val[row.id] = row.to_dict()
+            counter += 1  # number of rows = number of newcomers
+            if counter > no:
+                break
+    return ret_val
+
+
+def get_highest_position(ret_val):
+    # todo - implement find highest position
+    return ret_val
+
+
+@cross_origin()
+@app.route('/newcomers')
+def newcomers():
+    rank = int(request.args.get('rank', 100))
+    conn = Connection.get_connection(DB)
+    ret_val = get_newcomers(conn, rank)
+    ret_val = get_highest_position(ret_val)
+    kwargs = {'ret_val': ret_val}
+    return render_template('examples/custom.html', **kwargs)
+
+
+@cross_origin()
+@app.route('/aggregate_market_cap')
+def aggregate_market_cap():
+    conn = Connection.get_connection(DB)
+    results_200 = queries.get_marketcap_per_day(conn, rank=200)
+    results_100 = queries.get_marketcap_per_day(conn, rank=100)
+    return jsonify({"dates": results_200.keys(), "top 200": results_200.values(), "top 100": results_100.values()})
 
 
 @cross_origin()
@@ -416,7 +471,8 @@ def timeseries():
 def custompage():
     """Fake endpoint."""
     kwargs = dict(number=rr(1, 1000))
-    return render_template('examples/custom.html', **kwargs)
+    # return render_template('examples/custom.html', **kwargs)
+    return "{}"
 
 
 @cross_origin()
@@ -602,8 +658,8 @@ def test_venn():
 def sparklines():
     """Fake endpoint."""
     if any([
-        'pie' in request.args,
-        'discrete' in request.args,
+                'pie' in request.args,
+                'discrete' in request.args,
     ]):
         return jsonify([rr(1, 100) for _ in range(10)])
     return jsonify([[i, rr(i, 100)] for i in range(10)])

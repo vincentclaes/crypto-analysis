@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/vendor/bootstrap.min.css') }}">
+
     <!--link rel="stylesheet" href="{{ url_for('static', filename='css/vendor/bootstrap.min.css') }}"-->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <!--link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous"-->
 
 </head>
 <meta charset="utf-8">
@@ -12,8 +14,10 @@
      <table class="table">
           <thead>
             <tr>
-              <th scope="col">newcomer</th>
+              <th scope="col">name</th>
               <th scope="col">since</th>
+              <th scope="col">highest rank</th>
+              <th scope="col">current rank</th>
             </tr>
           </thead>
          {% for key,value in ret_val.iteritems() %}
@@ -21,6 +25,7 @@
             <tr>
               <th scope="row">{{ key }}</th>
               <td>{{ value["date"] }}</td>
+              <td>{{ value["rank"] }}</td>
             </tr>
           </tbody>
          {% endfor %}
