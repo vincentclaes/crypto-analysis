@@ -161,3 +161,8 @@ venv.bak/
 .idea/modules.xml
 .idea/vcs.xml
 .idea/crypto_analysis.iml
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
