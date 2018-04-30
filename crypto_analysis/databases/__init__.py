@@ -1,6 +1,12 @@
 import abc
 import sqlite3
 from sqlite3 import Error
+import os
+
+db_path = "/Users/vincent/Workspace/coinmarketcap_data/coinmarketcap_data.db"
+
+if os.path.exists("/home/ec2-user/projects/data/coinmarketcap_data.db"):
+    db_path = "/home/ec2-user/projects/data/coinmarketcap_data.db"
 
 
 class Connection(object):
@@ -9,7 +15,7 @@ class Connection(object):
     @staticmethod
     def get_connection(db):
         if 'sqlite' == db.lower():
-            return ConnectionSQLite.create_connection("/Users/vincent/Workspace/coinmarketcap_data/coinmarketcap_data.db")
+            return ConnectionSQLite.create_connection(db_path)
 
 
     @abc.abstractmethod
