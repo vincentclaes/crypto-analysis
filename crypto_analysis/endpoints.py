@@ -23,8 +23,8 @@ from flask import (
 from flask_cors import CORS
 from flask_cors import cross_origin
 
-from crypto_analysis.databases import Connection
-from crypto_analysis.databases import queries
+from databases import Connection
+from databases import queries
 
 app = Flask('endpoints_test')
 CORS(app)
