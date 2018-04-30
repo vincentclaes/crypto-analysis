@@ -16,16 +16,19 @@
             <tr>
               <th scope="col">name</th>
               <th scope="col">since</th>
-              <th scope="col">highest rank</th>
               <th scope="col">current rank</th>
+              <th scope="col">change 24h</th>
+              <th scope="col">highest rank</th>
             </tr>
           </thead>
-         {% for key,value in ret_val.iteritems() %}
+         {% for key,value in newcomers.iteritems() %}
            <tbody>
             <tr>
               <th scope="row">{{ key }}</th>
               <td>{{ value["date"] }}</td>
-              <td>{{ value["rank"] }}</td>
+              <td>{{ value["current_rank"] }}</td>
+              <td>{{ value["percent_change_24h"] }}</td>
+              <td>{{ value["highest_rank"] }}</td>
             </tr>
           </tbody>
          {% endfor %}

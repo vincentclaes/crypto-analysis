@@ -120,7 +120,15 @@ def newcomers():
     conn = Connection.get_connection(DB)
     ret_val = get_newcomers(conn, rank)
     ret_val = get_highest_position(ret_val)
-    kwargs = {'ret_val': ret_val}
+    kwargs = {'newcomers': ret_val}
+    from coinmarketcap import Market
+    coinmarketcap = Market()
+    for coin in ret_val.keys():
+        current_results = coinmarketcap.ticker(coin)
+        kwargs['newcomers'][coin]['current_rank'] = current_results[0]['rank']
+        kwargs['newcomers'][coin]['percent_change_24h'] = current_results[0]['percent_change_24h']
+        highest_rank = queries.get_highest_rank_for_coin(conn, coin)
+        kwargs['newcomers'][coin]['highest_rank'] = highest_rank
     return render_template('examples/custom.html', **kwargs)
 
 

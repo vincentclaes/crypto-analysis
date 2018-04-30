@@ -31,6 +31,12 @@ def get_data_below_uuid(conn, uuid, rank=100):
     df = df[df['rank'].astype(int) <= rank]
     return df
 
+def get_highest_rank_for_coin(conn, coin):
+    cur = conn.cursor()
+    cur.execute("SELECT rank FROM crypto_data where id='{}'".format(coin))
+    df = pd.DataFrame(cur.fetchall())
+    return df[0].astype(int).min()
+
 
 def get_marketcap_per_day(conn, rank=200):
     cur = conn.cursor()
