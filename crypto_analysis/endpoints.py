@@ -140,6 +140,13 @@ def aggregate_market_cap():
     results_100 = queries.get_marketcap_per_day(conn, rank=100)
     return jsonify({"dates": results_200.keys(), "top 200": results_200.values(), "top 100": results_100.values()})
 
+@cross_origin()
+@app.route('/change_percantage')
+def change_percantage():
+    rank = int(request.args.get('rank', 100))
+    conn = Connection.get_connection(DB)
+
+    return jsonify()
 
 @cross_origin()
 @app.route('/numbergroup')

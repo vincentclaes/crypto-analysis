@@ -47,6 +47,9 @@ def get_marketcap_per_day(conn, rank=200):
         ret_val[index] = sub_df['market_cap_usd'].astype(float).sum()
     return ret_val
 
+def get_change(period):
+    pass
+
 def select_all_coins(conn):
     """
     Query all rows in the tasks table

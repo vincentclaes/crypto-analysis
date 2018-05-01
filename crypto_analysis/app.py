@@ -2,7 +2,7 @@
 
 import os
 
-from flask import Flask
+from flask import Flask, redirect
 
 from flask_jsondash.charts_builder import charts
 
@@ -54,8 +54,9 @@ app.config['JSONDASH'] = dict(
 @app.route('/', methods=['GET'])
 def index():
     """Sample index."""
-    return '<a href="/charts">Visit the charts blueprint.</a>'
 
+    #return '<a href="/charts">Visit the charts blueprint.</a>'
+    return redirect("http://www.deltacryptoclub.com/charts/7d90fefe-4c63-11e8-8d9a-0650695bbf9c?jsondash_demo_mode=1", code=302)
 
 if __name__ == '__main__':
     PORT = int(os.getenv('PORT', 8080))
