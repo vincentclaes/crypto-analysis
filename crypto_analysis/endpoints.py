@@ -141,12 +141,17 @@ def aggregate_market_cap():
     return jsonify({"dates": results_200.keys(), "top 200": results_200.values(), "top 100": results_100.values()})
 
 @cross_origin()
-@app.route('/change_percantage')
-def change_percantage():
+@app.route('/change_percentage')
+def change_percentage():
     rank = int(request.args.get('rank', 100))
+    interval = request.args.get('interval', 'percent_change_7d')
     conn = Connection.get_connection(DB)
-
-    return jsonify()
+    uuid = queries.get_max_uuid(conn)
+    df = queries.get_data_for_uuid(conn, uuid, rank)
+    interval_series = df[interval].astype(float)
+    total_length = len(interval_series)
+    pos_change = len(interval_series[interval_series > 0])
+    return jsonify({'data': 100 * pos_change/float(total_length)})
 
 @cross_origin()
 @app.route('/numbergroup')
