@@ -24,7 +24,7 @@
              {% for value in newcomers %}
                <tbody>
                 <tr>
-                  <th scope="row">{{ key }}</th>
+                  <th scope="row">{{ value["name"] }}</th>
                   <td>{{ value["date"] }}</td>
                   <td>{{ value["current_rank"] }}</td>
                   <td>{{ value["percent_change_24h"] }}</td>
