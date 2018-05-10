@@ -12,7 +12,7 @@ from datetime import timedelta as td
 from itertools import combinations
 from random import choice, random
 from random import randrange as rr
-
+from dateutil.parser import parse as parse_date
 from flask import (
     Flask,
     abort,
@@ -123,12 +123,15 @@ def newcomers():
     kwargs = {'newcomers': ret_val}
     from coinmarketcap import Market
     coinmarketcap = Market()
+    date_coin_mapping = {}
     for coin in ret_val.keys():
         current_results = coinmarketcap.ticker(coin)
         kwargs['newcomers'][coin]['current_rank'] = current_results[0]['rank']
         kwargs['newcomers'][coin]['percent_change_24h'] = current_results[0]['percent_change_24h']
         highest_rank = queries.get_highest_rank_for_coin(conn, coin)
         kwargs['newcomers'][coin]['highest_rank'] = highest_rank
+        date_coin_mapping[coin] = parse_date(ret_val[coin]["date"])
+    kwargs['newcomers'] = [kwargs['newcomers'][name] for name in sorted(date_coin_mapping, key=date_coin_mapping.get, reverse=True)]
     return render_template('examples/custom.html', **kwargs)
 
 
