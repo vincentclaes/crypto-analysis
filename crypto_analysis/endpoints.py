@@ -25,11 +25,13 @@ from flask_cors import cross_origin
 
 from databases import Connection
 from databases import queries
+from flask_caching import Cache
 
 app = Flask('endpoints_test')
 CORS(app)
 app.config['SECRET_KEY'] = 'NOTSECURELOL'
 app.debug = True
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
 STRESS_MAX_POINTS = 300
 
@@ -115,6 +117,7 @@ def get_highest_position(ret_val):
 
 @cross_origin()
 @app.route('/newcomers')
+@cache.cached(timeout=10800, query_string=True)
 def newcomers():
     rank = int(request.args.get('rank', 100))
     conn = Connection.get_connection(DB)
@@ -137,14 +140,17 @@ def newcomers():
 
 @cross_origin()
 @app.route('/aggregate_market_cap')
+@cache.cached(timeout=10800, query_string=True)
 def aggregate_market_cap():
     conn = Connection.get_connection(DB)
     results_200 = queries.get_marketcap_per_day(conn, rank=200)
     results_100 = queries.get_marketcap_per_day(conn, rank=100)
     return jsonify({"dates": results_200.keys(), "top 200": results_200.values(), "top 100": results_100.values()})
 
+
 @cross_origin()
 @app.route('/change_percentage')
+@cache.cached(timeout=10800, query_string=True)
 def change_percentage():
     rank = int(request.args.get('rank', 100))
     interval = request.args.get('interval', 'percent_change_7d')
