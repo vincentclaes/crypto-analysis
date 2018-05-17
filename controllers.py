@@ -1,7 +1,7 @@
 import logging
 
 from dateutil.parser import parse as parse_date
-
+from collections import OrderedDict
 from databases import queries
 
 
@@ -9,24 +9,21 @@ def _get_newcomer_for_uuid(conn, uuid, rank):
     df_last = queries.get_data_for_uuid(conn, uuid, rank)
     df_tail = queries.get_data_below_uuid(conn, uuid, rank)
     newcomers = df_last[df_last["id"].isin(df_tail["id"])]
-    if newcomers.empty:
-        logging.info("no newcomers found for uuid {}".format(uuid))
     return newcomers
 
 
 def _get_newcomers(conn, rank, no=10):
     uuids = queries.get_uuids(conn)
-    counter = 0
-    ret_val = {}
+    ret_val = OrderedDict()
     for uuid in uuids:
         newcomer = _get_newcomer_for_uuid(conn, uuid, rank)
         if newcomer.empty:
+            logging.info("no newcomers found for uuid {}".format(uuid))
             continue
         for index, row in newcomer.iterrows():
             ret_val[row.id] = row.to_dict()
-            counter += 1  # number of rows = number of newcomers
-            if counter > no:
-                break
+            if len(ret_val) >= no:
+                return ret_val
     return ret_val
 
 
