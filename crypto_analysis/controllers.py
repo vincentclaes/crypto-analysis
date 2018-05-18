@@ -4,7 +4,7 @@ from collections import OrderedDict
 from coinmarketcap import Market
 from dateutil.parser import parse as parse_date
 
-from databases import queries
+from crypto_analysis.databases import queries
 
 
 def _get_newcomer_for_uuid(conn, uuid, rank):

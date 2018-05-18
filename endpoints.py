@@ -3,9 +3,6 @@
 # -*- coding: utf-8 -*-
 
 import json
-import locale
-import logging
-import os
 import time
 from datetime import datetime as dt
 from datetime import timedelta as td
@@ -13,7 +10,8 @@ from itertools import combinations
 from random import choice, random
 from random import randrange as rr
 
-from dateutil.parser import parse as parse_date
+import locale
+import os
 from flask import (
     Flask,
     abort,
@@ -25,12 +23,9 @@ from flask_caching import Cache
 from flask_cors import CORS
 from flask_cors import cross_origin
 
-from databases import Connection
-from databases import queries
-from databases import DB
-from sqlite3 import Error
-
-import controllers
+from crypto_analysis.databases import Connection
+from crypto_analysis.databases import DB
+from crypto_analysis.databases import queries
 
 app = Flask('endpoints_test')
 CORS(app)

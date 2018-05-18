@@ -1,7 +1,7 @@
 import unittest
 
-import controllers
-from databases import Connection
+from crypto_analysis import controllers
+from crypto_analysis.databases import Connection
 
 
 class TestNewcomers(unittest.TestCase):

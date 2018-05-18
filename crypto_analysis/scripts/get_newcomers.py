@@ -4,10 +4,10 @@ import sys
 import pandas as pd
 from sqlalchemy import create_engine
 
-from controllers import get_newcomers
-from databases import Connection
-from databases import DB
-from databases import db_path
+from crypto_analysis.controllers import get_newcomers
+from crypto_analysis.databases import Connection
+from crypto_analysis.databases import DB
+from crypto_analysis.databases import db_path
 
 """
 get newcomers and dump in a table. we expect the rank as 1st argument.
