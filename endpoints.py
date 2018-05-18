@@ -27,6 +27,9 @@ from flask_cors import cross_origin
 
 from databases import Connection
 from databases import queries
+from databases import DB
+from sqlite3 import Error
+
 import controllers
 
 app = Flask('endpoints_test')
@@ -42,7 +45,6 @@ locale.setlocale(locale.LC_ALL, '')
 cwd = os.getcwd()
 # cwd = os.path.dirname(os.path.realpath(__file__))
 
-DB = 'sqlite'
 
 
 def recursive_d3_data(current=0, max_iters=12, data=None):
@@ -89,12 +91,13 @@ def rand_hex_color():
 
 @cross_origin()
 @app.route('/newcomers')
-@cache.cached(timeout=10800, query_string=True)
+#@cache.cached(timeout=10800, query_string=True)
 def newcomers():
     rank = int(request.args.get('rank', 100))
+    no = int(request.args.get('no', 10))
     conn = Connection.get_connection(DB)
-    kwargs = controllers.get_newcomers(conn, rank)
-    return render_template('examples/custom.html', **kwargs)
+    newcomers = queries.get_newcomers(conn, rank, no)
+    return render_template('examples/newcomers.html', **{'newcomers' : newcomers})
 
 
 @cross_origin()

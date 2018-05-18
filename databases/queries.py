@@ -1,4 +1,5 @@
 import pandas as pd
+from sqlalchemy import create_engine
 
 
 def get_uuids(conn):
@@ -25,11 +26,13 @@ def get_data_for_uuid(conn, uuid, rank=100):
 
 def get_data_below_uuid(conn, uuid, rank=100):
     cur = conn.cursor()
-    cur.execute("SELECT * FROM crypto_data where uuid<={} and rank <= {} group by date order by uuid desc".format(uuid, rank))
+    cur.execute(
+        "SELECT * FROM crypto_data where uuid<={} and rank <= {} group by date order by uuid desc".format(uuid, rank))
     df = pd.DataFrame(cur.fetchall())
     df.columns = [e[0] for e in cur.description]
     df = df[df['rank'].astype(int) <= rank]
     return df
+
 
 def get_highest_rank_for_coin(conn, coin):
     cur = conn.cursor()
@@ -41,41 +44,18 @@ def get_highest_rank_for_coin(conn, coin):
 def get_marketcap_per_day(conn, rank=200):
     cur = conn.cursor()
     ret_val = {}
-    results = cur.execute("select date,uuid,id,market_cap_usd from crypto_data where rank <= {} group by date,id order by date asc".format(rank)).fetchall()
-    df = pd.DataFrame(results, columns=['date','uuid','id','market_cap_usd'])
+    results = cur.execute(
+        "select date,uuid,id,market_cap_usd from crypto_data where rank <= {} group by date,id order by date asc".format(
+            rank)).fetchall()
+    df = pd.DataFrame(results, columns=['date', 'uuid', 'id', 'market_cap_usd'])
     for index, sub_df in df.groupby('date'):
         ret_val[index] = sub_df['market_cap_usd'].astype(float).sum()
     return ret_val
 
-def get_change(period):
-    pass
 
-def select_all_coins(conn):
-    """
-    Query all rows in the tasks table
-    :param conn: the Connection object
-    :return:
-    """
+def get_newcomers(conn, rank=100, no=10):
     cur = conn.cursor()
-    cur.execute("SELECT * FROM tasks")
+    cur.execute("SELECT * FROM newcomers_top{} limit {}".format(rank, no))
+    df = pd.DataFrame(cur.fetchall(), columns=[element[0] for element in cur.description])
+    return df
 
-    rows = cur.fetchall()
-
-    for row in rows:
-        print(row)
-
-
-def select_task_by_priority(conn, priority):
-    """
-    Query tasks by priority
-    :param conn: the Connection object
-    :param priority:
-    :return:
-    """
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM tasks WHERE priority=?", (priority,))
-
-    rows = cur.fetchall()
-
-    for row in rows:
-        print(row)

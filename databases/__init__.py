@@ -1,12 +1,17 @@
 import abc
+import os
 import sqlite3
 from sqlite3 import Error
-import os
 
-db_path = "/Users/vincent/Workspace/coinmarketcap_data/coinmarketcap_data.db"
 
-if os.path.exists("/home/ec2-user/projects/data/coinmarketcap_data.db"):
-    db_path = "/home/ec2-user/projects/data/coinmarketcap_data.db"
+def get_db():
+    db_path = "/Users/vincent/Workspace/coinmarketcap_data/coinmarketcap_data.db"
+    if os.path.exists("/home/ec2-user/projects/data/coinmarketcap_data.db"):
+        db_path = "/home/ec2-user/projects/data/coinmarketcap_data.db"
+    return db_path
+
+DB = 'sqlite'
+db_path = get_db()
 
 
 class Connection(object):
@@ -40,4 +45,3 @@ class ConnectionSQLite(Connection):
             print(e)
 
         return None
-

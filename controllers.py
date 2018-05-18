@@ -1,7 +1,9 @@
 import logging
-
-from dateutil.parser import parse as parse_date
 from collections import OrderedDict
+
+from coinmarketcap import Market
+from dateutil.parser import parse as parse_date
+
 from databases import queries
 
 
@@ -12,7 +14,7 @@ def _get_newcomer_for_uuid(conn, uuid, rank):
     return newcomers
 
 
-def _get_newcomers(conn, rank, no=10):
+def _get_newcomers(conn, rank, no):
     uuids = queries.get_uuids(conn)
     ret_val = OrderedDict()
     for uuid in uuids:
@@ -27,19 +29,24 @@ def _get_newcomers(conn, rank, no=10):
     return ret_val
 
 
-def get_newcomers(conn, rank):
-    ret_val = _get_newcomers(conn, rank)
-    kwargs = {'newcomers': ret_val}
-    from coinmarketcap import Market
+def _enrich_with_latest_data(conn, newcomers):
+    kwargs = {'newcomers': newcomers}
     coinmarketcap = Market()
     date_coin_mapping = {}
-    for coin in ret_val.keys():
+    for coin in newcomers.keys():
         current_results = coinmarketcap.ticker(coin)
         kwargs['newcomers'][coin]['current_rank'] = current_results[0]['rank']
         kwargs['newcomers'][coin]['percent_change_24h'] = current_results[0]['percent_change_24h']
         highest_rank = queries.get_highest_rank_for_coin(conn, coin)
         kwargs['newcomers'][coin]['highest_rank'] = highest_rank
-        date_coin_mapping[coin] = parse_date(ret_val[coin]["date"])
+        date_coin_mapping[coin] = parse_date(newcomers[coin]["date"])
     kwargs['newcomers'] = [kwargs['newcomers'][name] for name in
                            sorted(date_coin_mapping, key=date_coin_mapping.get, reverse=True)]
     return kwargs
+
+
+def get_newcomers(conn, rank, no=10):
+    newcomers = _get_newcomers(conn, rank, no)
+    newcomers = _enrich_with_latest_data(conn, newcomers)
+    return newcomers
+
