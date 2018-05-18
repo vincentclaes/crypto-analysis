@@ -30,4 +30,5 @@ create_newcomers_top200 = BashOperator(
     bash_command='python /home/ec2-user/projects/crypto-analysis/scripts/get_newcomers.py 200 100',
     dag=dag)
 
-get_coinmarketcap_data >> create_newcomers_top100 >> create_newcomers_top200
+get_coinmarketcap_data.setupstream(create_newcomers_top100)
+create_newcomers_top100.setupstream(create_newcomers_top200)
