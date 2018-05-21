@@ -12,7 +12,8 @@ args = {
 
 dag = DAG(
     dag_id='newcomers', default_args=args,
-    schedule_interval='0 * * * *',
+    # schedule_interval='0 * * * *',
+    schedule_interval=None,
     dagrun_timeout=timedelta(minutes=60))
 
 get_coinmarketcap_data = BashOperator(
@@ -22,12 +23,12 @@ get_coinmarketcap_data = BashOperator(
 
 create_newcomers_top100 = BashOperator(
     task_id='create_newcomers_top100',
-    bash_command='python /home/ec2-user/projects/crypto-analysis/scripts/get_newcomers.py 100 100',
+    bash_command='python /home/ec2-user/projects/crypto-analysis/crypto_analysis/scripts/get_newcomers.py 100 100',
     dag=dag)
 
 create_newcomers_top200 = BashOperator(
     task_id='create_newcomers_top200',
-    bash_command='python /home/ec2-user/projects/crypto-analysis/scripts/get_newcomers.py 200 100',
+    bash_command='python /home/ec2-user/projects/crypto-analysis/crypto_analysis/scripts/get_newcomers.py 200 100',
     dag=dag)
 
 get_coinmarketcap_data.set_downstream(create_newcomers_top100)
