@@ -26,6 +26,7 @@ from flask_cors import cross_origin
 from crypto_analysis.databases import Connection
 from crypto_analysis.databases import DB
 from crypto_analysis.databases import queries
+from crypto_analysis import controllers
 
 app = Flask('endpoints_test')
 CORS(app)
@@ -85,14 +86,18 @@ def rand_hex_color():
 
 
 @cross_origin()
-@app.route('/newcomers')
+@app.route('/newcomers', methods=['GET', 'POST'])
 #@cache.cached(timeout=10800, query_string=True)
 def newcomers():
     rank = int(request.args.get('rank', 100))
     no = int(request.args.get('no', 10))
     conn = Connection.get_connection(DB)
-    newcomers = queries.get_newcomers(conn, rank, no)
-    return render_template('examples/newcomers.html', **{'newcomers' : newcomers})
+    if request.method == 'GET':
+        newcomers = queries.get_newcomers(conn, rank, no)
+        return render_template('examples/newcomers.html', **{'newcomers' : newcomers})
+    elif request.method == 'POST':
+        controllers.newcomers.get_newcomers(conn, rank, no)
+        return jsonify({201: '{} last newcomers found for the top {}'.format(no, rank)})
 
 
 @cross_origin()
