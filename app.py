@@ -55,8 +55,8 @@ app.config['JSONDASH'] = dict(
 def index():
     """Sample index."""
 
-    return '<a href="/charts">Visit the charts blueprint.</a>'
-    # return redirect("http://www.deltacryptoclub.com/charts/9f11b134-586d-11e8-8ad3-0650695bbf9c?jsondash_demo_mode=1", code=302)
+    # return '<a href="/charts">Visit the charts blueprint.</a>'
+    return redirect("http://www.deltacryptoclub.com/charts/e417e710-5df1-11e8-9e2f-06afdf58db0c?jsondash_demo_mode=1", code=302)
 
 if __name__ == '__main__':
     PORT = int(os.getenv('PORT', 8080))
