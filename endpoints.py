@@ -26,7 +26,7 @@ from flask_cors import cross_origin
 from crypto_analysis.databases import Connection
 from crypto_analysis.databases import DB
 from crypto_analysis.databases import queries
-from crypto_analysis import controllers
+from crypto_analysis.controllers import newcomers as controller_newcomers
 
 app = Flask('endpoints_test')
 CORS(app)
@@ -96,7 +96,7 @@ def newcomers():
         newcomers = queries.get_newcomers(conn, rank, no)
         return render_template('examples/newcomers.html', **{'newcomers' : newcomers})
     elif request.method == 'POST':
-        controllers.newcomers.get_newcomers(conn, rank, no)
+        controller_newcomers.get_newcomers(conn, rank, no)
         return jsonify({201: '{} last newcomers found for the top {}'.format(no, rank)})
 
 
