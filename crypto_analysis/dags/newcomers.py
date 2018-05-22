@@ -13,7 +13,7 @@ args = {
 
 dag = DAG(
     dag_id='newcomers', default_args=args,
-    schedule_interval='0 * * * *',
+    schedule_interval="@hourly",
     dagrun_timeout=timedelta(minutes=60))
 
 
