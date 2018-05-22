@@ -10,6 +10,16 @@ install pipenv
 
 `pip install pipenv`
 
+airflow
+
+`mkdir airflow`
+`cd airflow`
+`pipenv --two`
+`pipenv shell`
+`pipenv install airflow`
+`airflow webserver -p 8080`
+`airflow scheduler`
+
 ## start
 `sudo nohup python app_wsgi.py`
 
