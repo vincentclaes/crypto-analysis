@@ -15,8 +15,8 @@ from crypto_analysis.databases import queries
 
 def _get_newcomer_for_uuid(conn, uuid, rank):
     df_last = queries.get_data_for_uuid(conn, uuid, rank)
-    df_tail = queries.get_data_below_uuid(conn, uuid, rank)
-    newcomers = df_last[df_last["id"].isin(df_tail["id"])]
+    df_tail = queries.get_unique_ids_below_uuid(conn, uuid, rank)
+    newcomers = df_last[~df_last["id"].isin(df_tail["id"])]
     return newcomers
 
 

@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from sqlalchemy import create_engine
 
 
@@ -23,16 +24,30 @@ def get_data_for_uuid(conn, uuid, rank=100):
     df = df[df['rank'].astype(int) <= rank]
     return df
 
+def get_unique_ids_for_uuid(conn, uuid, rank=100):
+    cur = conn.cursor()
+    cur.execute("SELECT DISTINCT id FROM crypto_data where uuid=={}".format(uuid))
+    df = pd.DataFrame(cur.fetchall())
+    df.columns = [e[0] for e in cur.description]
+    return df
 
 def get_data_below_uuid(conn, uuid, rank=100):
     cur = conn.cursor()
     cur.execute(
-        "SELECT * FROM crypto_data where uuid<={} and rank <= {} group by date order by uuid desc".format(uuid, rank))
+        "SELECT * FROM crypto_data where uuid<={} and rank <= {}".format(uuid, rank))
     df = pd.DataFrame(cur.fetchall())
+
     df.columns = [e[0] for e in cur.description]
     df = df[df['rank'].astype(int) <= rank]
     return df
 
+def get_unique_ids_below_uuid(conn, uuid, rank=100):
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT DISTINCT id FROM crypto_data where uuid<={} and rank <= {}".format(uuid, rank))
+    df = pd.DataFrame(cur.fetchall())
+    df.columns = [e[0] for e in cur.description]
+    return df
 
 def get_highest_rank_for_coin(conn, coin):
     cur = conn.cursor()
