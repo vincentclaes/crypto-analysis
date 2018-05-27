@@ -20,7 +20,8 @@ dag = DAG(
 def create_newcomers(rank, no, *args, **kwargs):
     url = "http://0.0.0.0:5004/newcomers"
     querystring = {"rank": rank, "no": no}
-    requests.request("POST", url, params=querystring)
+    result = requests.request("POST", url, params=querystring)
+    print(result.content)
 
 get_coinmarketcap_data = BashOperator(
     task_id='get_coinmarketcap_data',
