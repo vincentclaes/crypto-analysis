@@ -96,8 +96,8 @@ def newcomers():
         newcomers = queries.get_newcomers(conn, rank, no)
         return render_template('examples/newcomers.html', **{'newcomers' : newcomers})
     elif request.method == 'POST':
-        controller_newcomers.get_newcomers(conn, rank, no)
-        return jsonify({201: '{} last newcomers found for the top {}'.format(no, rank)})
+        newcomers = controller_newcomers.get_newcomers(conn, rank, no)
+        return jsonify({201: '{} last newcomers found for the top {}'.format(len(newcomers.get('newcomers')), rank)})
 
 
 @cross_origin()
