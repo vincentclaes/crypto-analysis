@@ -24,7 +24,7 @@ def create_newcomers(rank, no, *args, **kwargs):
 
 get_coinmarketcap_data = BashOperator(
     task_id='get_coinmarketcap_data',
-    bash_command='python /home/ec2-user/projects/coinmarketcap_data/coinmarketcap_data.py',
+    bash_command='sudo python /home/ec2-user/projects/coinmarketcap_data/coinmarketcap_data.py',
     dag=dag)
 
 create_newcomers_top100 = PythonOperator(
