@@ -25,7 +25,7 @@ install pipenv
 
 #### stop
 
-kill $(ps -ef | grep "airflow scheduler" | awk '{print $2}')
+`kill $(ps -ef | grep "airflow scheduler" | awk '{print $2}')`
 `sudo fuser -k 8080/tcp`
 
 
