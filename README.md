@@ -10,8 +10,9 @@ install pipenv
 
 `pip install pipenv`
 
-airflow
+### airflow
 
+#### start
 `mkdir airflow`
 `cd airflow`
 `pipenv --two`
@@ -22,7 +23,13 @@ airflow
 `nohup airflow webserver -p 8080 >& /dev/null < /dev/null &`
 `nohup airflow scheduler >& /dev/null < /dev/null &`
 
-mongo
+#### stop
+
+kill $(ps -ef | grep "airflow scheduler" | awk '{print $2}')
+`sudo fuser -k 8080/tcp`
+
+
+### mongo
 
 
 follow steps here https://docs.mongodb.com/manual/tutorial/install-mongodb-on-amazon/
@@ -31,17 +38,19 @@ follow steps here https://docs.mongodb.com/manual/tutorial/install-mongodb-on-am
 `sudo mkdir /data/db`
 `sudo mongod`
 
-sqlite
+### sqlite
 
 `mkdir ~/projects/data`
 `scp -i ~/.ssh/crypto-delta.pem coinmarketcap_data.db ec2-user@18.196.37.245:~/projects/data/coinmarketcap_data.db`
 
-## start
+### front end + back end
+
+#### start
 `sudo nohup python app_wsgi.py >& /dev/null < /dev/null &`
 
 `sudo nohup python endpoints_wsgi.py  >& /dev/null < /dev/null &`
 
-## stop
+#### stop
 `sudo fuser -k 80/tcp`
 
 `sudo fuser -k 5004/tcp`

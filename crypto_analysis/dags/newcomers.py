@@ -32,14 +32,14 @@ create_newcomers_top100 = PythonOperator(
     task_id='create_newcomers_top100',
     provide_context=True,
     python_callable=create_newcomers,
-    op_kwargs={'rank': 100, 'no' : 100},
+    op_kwargs={'rank': 100, 'no' : 25},
     dag=dag)
 
 create_newcomers_top200 = PythonOperator(
     task_id='create_newcomers_top200',
     provide_context=True,
     python_callable=create_newcomers,
-    op_kwargs={'rank': 200, 'no' : 100},
+    op_kwargs={'rank': 200, 'no' : 25},
     dag=dag)
 
 
