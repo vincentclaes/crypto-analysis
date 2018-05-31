@@ -5,7 +5,8 @@ from sqlalchemy import create_engine
 
 def get_uuids(conn):
     cur = conn.cursor()
-    results = cur.execute("select uuid from crypto_data group by date order by uuid desc").fetchall()
+    # results = cur.execute("select uuid from crypto_data group by date order by uuid desc").fetchall()
+    results = cur.execute("select distinct uuid from crypto_data order by uuid desc").fetchall()
     uuids = [element[0] for element in results]
     return uuids
 
@@ -44,7 +45,7 @@ def get_data_below_uuid(conn, uuid, rank=100):
 def get_unique_ids_below_uuid(conn, uuid, rank=100):
     cur = conn.cursor()
     cur.execute(
-        "SELECT DISTINCT id FROM crypto_data where uuid<={} and rank <= {}".format(uuid, rank))
+        "SELECT DISTINCT id FROM crypto_data where uuid<{} and rank <= {}".format(uuid, rank))
     df = pd.DataFrame(cur.fetchall())
     df.columns = [e[0] for e in cur.description]
     return df

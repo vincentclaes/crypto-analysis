@@ -17,11 +17,11 @@ class TestQueries(unittest.TestCase):
     def test_get_data_for_uuid(self):
         df = queries.get_data_for_uuid(self.conn, TestQueries.MAX_UUID, 100)
         self.assertEqual(TestQueries.MAX_UUID, df["uuid"].loc[0])
-        self.assertEqual(df.shape[0], df["uuid"].loc[0])
+        self.assertEqual(df.shape[0], 100)
 
     def test_get_unique_ids_below_uuid(self):
         df = queries.get_unique_ids_below_uuid(self.conn, TestQueries.MAX_UUID, 100)
-        self.assertEqual(df.shape[0], 146)
+        self.assertEqual(df.shape[0], 145)
 
 
 if __name__ == '__main__':
