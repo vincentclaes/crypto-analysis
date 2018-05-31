@@ -6,6 +6,7 @@ from crypto_analysis.databases import queries
 
 class TestQueries(unittest.TestCase):
     MAX_UUID = 1526408353
+
     @classmethod
     def setUpClass(cls):
         cls.conn = Connection.get_connection('test')

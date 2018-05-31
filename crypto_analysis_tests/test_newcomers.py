@@ -42,8 +42,3 @@ class TestNewcomers(unittest.TestCase):
         m_tail.return_value = self.df_tail
         newcomer = newcomers.get_newcomers(self.conn, 10)
         self.assertEqual("my_coin", newcomer["id"][0])
-
-
-
-if __name__ == '__main__':
-    unittest.main()
