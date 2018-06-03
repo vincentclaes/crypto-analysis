@@ -4,7 +4,7 @@ WSGI entrypoint for gunicorn et al.
 before we used:
 
 from gevent.wsgi import WSGIServer
-http_server = WSGIServer(('', 5008), app)
+http_server = WSGIServer(('', 5004), app)
 http_server.serve_forever()
 
 but this couldn't handle concurrent requests.

@@ -1,10 +1,6 @@
 """A separate Flask app that serves fake endpoints for demo purposes."""
 
 # -*- coding: utf-8 -*-
-
-from gevent import monkey
-monkey.patch_all()
-
 import json
 import time
 from datetime import datetime as dt

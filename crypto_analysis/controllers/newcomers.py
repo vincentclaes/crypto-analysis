@@ -14,6 +14,7 @@ from crypto_analysis.databases import queries
 
 
 def _get_newcomer_for_uuid(conn, uuid, rank):
+    logging.info('getting newcomers for uuid {}'.format(uuid))
     df_last = queries.get_data_for_uuid(conn, uuid, rank)
     df_tail = queries.get_unique_ids_below_uuid(conn, uuid, rank)
     newcomers = df_last[~df_last["id"].isin(df_tail["id"])]
@@ -30,6 +31,7 @@ def _get_newcomers(conn, rank, no):
             continue
         for index, row in newcomer.iterrows():
             ret_val[row.id] = row.to_dict()
+            logging.info('newcomers found : {}'.format(ret_val))
             if len(ret_val) >= no:
                 return ret_val
     return ret_val
@@ -46,6 +48,10 @@ def _enrich_with_latest_data(conn, newcomers):
         highest_rank = queries.get_highest_rank_for_coin(conn, coin)
         kwargs['newcomers'][coin]['highest_rank'] = highest_rank
         date_coin_mapping[coin] = parse_date(newcomers[coin]["date"])
+
+        # cleaning - fixme move this to seperate function
+        kwargs['newcomers'][coin]['name'] = kwargs['newcomers'][coin].get('name', kwargs['newcomers'][coin].get('id').capitalize())
+        kwargs['newcomers'][coin]['date'] = kwargs['newcomers'][coin]['date'][:10]
     kwargs['newcomers'] = [kwargs['newcomers'][name] for name in
                            sorted(date_coin_mapping, key=date_coin_mapping.get, reverse=True)]
     return kwargs

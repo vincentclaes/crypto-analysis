@@ -31,7 +31,6 @@ install pipenv
 
 ### mongo
 
-
 follow steps here https://docs.mongodb.com/manual/tutorial/install-mongodb-on-amazon/
 
 
@@ -43,12 +42,35 @@ follow steps here https://docs.mongodb.com/manual/tutorial/install-mongodb-on-am
 `mkdir ~/projects/data`
 `scp -i ~/.ssh/crypto-delta.pem coinmarketcap_data.db ec2-user@18.196.37.245:~/projects/data/coinmarketcap_data.db`
 
+### nginx
+
+documentation: https://medium.com/ymedialabs-innovation/deploy-flask-app-with-nginx-using-gunicorn-and-supervisor-d7a93aa07c18
+
+`sudo yum install nginx -y`
+
+add following config to file
+
+`sudo vim /etc/nginx/conf.d/virtual.conf`
+
+```
+server {
+    listen       80;
+    server_name  deltacryptoclub.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+    }
+}
+```
+
 ### front end + back end
 
 #### start
 `sudo nohup python app_wsgi.py >& /dev/null < /dev/null &`
+`nohup gunicorn app_wsgi:app -k gevent -w 2 -b 0.0.0.0:8000  >& /dev/null < /dev/null &`
 
 `sudo nohup python endpoints_wsgi.py  >& /dev/null < /dev/null &`
+`nohup gunicorn endpoints_wsgi:app -k gevent -w 2 -b 0.0.0.0:5004 >& /dev/null < /dev/null &`
 
 #### stop
 `sudo fuser -k 80/tcp`
