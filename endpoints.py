@@ -3,11 +3,14 @@
 # -*- coding: utf-8 -*-
 import json
 import time
+import datetime
 from datetime import datetime as dt
 from datetime import timedelta as td
 from itertools import combinations
 from random import choice, random
 from random import randrange as rr
+from concurrent.futures import ThreadPoolExecutor
+executor = ThreadPoolExecutor(1)
 
 import locale
 import os
@@ -95,8 +98,8 @@ def newcomers():
         newcomers = queries.get_newcomers(conn, rank, no)
         return render_template('examples/newcomers.html', **{'newcomers' : newcomers})
     elif request.method == 'POST':
-        newcomers = controller_newcomers.get_newcomers(conn, rank, no)
-        return jsonify({201: '{} last newcomers found for the top {}'.format(len(newcomers.get('newcomers')), rank)})
+        executor.submit(controller_newcomers.get_newcomers, conn, rank, no)
+        return jsonify({201: 'job submitted'})
 
 
 @cross_origin()
