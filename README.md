@@ -70,6 +70,10 @@ server {
 ### front end + back end
 
 #### start
+
+we use gunicorn together with nginx to run the front end.
+for the back end we use 
+
 `sudo nohup python app_wsgi.py >& /dev/null < /dev/null &`
 `nohup gunicorn app_wsgi:app -k gevent -w 2 -b 0.0.0.0:8000  >& /dev/null < /dev/null &`
 
