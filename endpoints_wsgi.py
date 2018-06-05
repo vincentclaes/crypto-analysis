@@ -14,9 +14,6 @@ gunicorn endpoints_wsgi:app -k gevent -w 2 -b 0.0.0.0:5004
 
 """
 
-from gevent.wsgi import WSGIServer
-
 from endpoints import app
 
-http_server = WSGIServer(('', 5004), app)
-http_server.serve_forever()
+app
