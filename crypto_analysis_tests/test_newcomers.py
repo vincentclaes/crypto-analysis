@@ -1,3 +1,4 @@
+import json
 import os
 import unittest
 
@@ -19,6 +20,8 @@ class TestNewcomers(unittest.TestCase):
         # create a new coin and add it to the last ones
         self.df_last['id'][0] = "my_coin"
         self.df_tail = pd.read_csv(os.path.join(TEST_ROOT, 'test_files', 'test_newcomers_df_tail'), index_col=0)
+        self.newcomers = json.load(
+            open(os.path.join(TEST_ROOT, 'test_files', 'test_newcomers_enrich_latest_data.json')))
 
     @patch('crypto_analysis.databases.queries.get_unique_ids_below_uuid')
     @patch('crypto_analysis.databases.queries.get_data_for_uuid')
@@ -42,3 +45,9 @@ class TestNewcomers(unittest.TestCase):
         m_tail.return_value = self.df_tail
         newcomer = newcomers.get_newcomers(self.conn, 10)
         self.assertEqual("my_coin", newcomer["id"][0])
+
+    @patch('crypto_analysis.databases.queries.get_highest_rank_for_coin')
+    def test_enrich_with_latest_data(self, m_highest_rank):
+        newcomers_enriched = newcomers._enrich_with_latest_data(self.conn, self.newcomers)
+        df = pd.DataFrame(newcomers_enriched.get('newcomers'))
+        self.assertTrue(all(df["name"].tolist()))

@@ -50,7 +50,9 @@ def _enrich_with_latest_data(conn, newcomers):
         date_coin_mapping[coin] = parse_date(newcomers[coin]["date"])
 
         # cleaning - fixme move this to seperate function
-        kwargs['newcomers'][coin]['name'] = kwargs['newcomers'][coin].get('name', kwargs['newcomers'][coin].get('id').capitalize())
+        newcomer_name = kwargs['newcomers'][coin].get('name')
+        kwargs['newcomers'][coin]['name'] = kwargs['newcomers'][coin].get(
+            'id').capitalize() if newcomer_name is None else newcomer_name
         kwargs['newcomers'][coin]['date'] = kwargs['newcomers'][coin]['date'][:10]
     kwargs['newcomers'] = [kwargs['newcomers'][name] for name in
                            sorted(date_coin_mapping, key=date_coin_mapping.get, reverse=True)]

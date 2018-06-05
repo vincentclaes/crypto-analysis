@@ -20,10 +20,10 @@ class Connection(object):
     @staticmethod
     def get_connection(db, check_same_thread=True):
         if 'sqlite' == db.lower():
-            return ConnectionSQLite.create_connection(db_path, check_same_thread=check_same_thread)
+            return ConnectionSQLite.create_connection(db_path, check_same_thread)
         elif 'test' == db.lower():
             test_db = "/Users/vincent/Workspace/python/crypto-analysis/crypto_analysis_tests/test_database/coinmarketcap_data.db"
-            return ConnectionSQLite.create_connection(test_db)
+            return ConnectionSQLite.create_connection(test_db, check_same_thread)
 
     @abc.abstractmethod
     def create_connection(self):
