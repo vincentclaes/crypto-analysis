@@ -12,7 +12,15 @@ now we start the app with
 
 gunicorn app_wsgi:app -k gevent -w 2 -b 0.0.0.0:80
 
-"""
+code looks like:
 
 from app import app
 app
+"""
+
+from gevent.wsgi import WSGIServer
+
+from app import app
+
+http_server = WSGIServer(('', 80), app)
+http_server.serve_forever()

@@ -74,10 +74,12 @@ server {
 we use gunicorn together with nginx to run the front end.
 for the back end we use the regular command with gevent and wsgi server.
 
+gevent + wsgi server
 `sudo nohup python app_wsgi.py >& /dev/null < /dev/null &`
-`nohup gunicorn app_wsgi:app -k gevent -w 2 -b 0.0.0.0:8000  >& /dev/null < /dev/null &`
-
 `sudo nohup python endpoints_wsgi.py  >& /dev/null < /dev/null &`
+
+gunicorn and nginx
+`nohup gunicorn app_wsgi:app -k gevent -w 2 -b 0.0.0.0:8000  >& /dev/null < /dev/null &`
 `nohup gunicorn endpoints_wsgi:app -k gevent -w 2 -b 0.0.0.0:5004 >& /dev/null < /dev/null &`
 
 #### stop
