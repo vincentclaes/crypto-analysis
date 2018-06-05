@@ -2,10 +2,12 @@
 
 # -*- coding: utf-8 -*-
 import json
+import logging
 import time
 from datetime import datetime as dt
 from datetime import timedelta as td
 from itertools import combinations
+from logging.handlers import RotatingFileHandler
 from random import choice, random
 from random import randrange as rr
 
@@ -749,6 +751,10 @@ def graphdata():
 
 
 if __name__ == '__main__':
+    handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=3)
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.ERROR)
+    logger.addHandler(handler)
     PORT = int(os.getenv('PORT', 5004))
     HOST = os.getenv('HOST', '0.0.0.0')
     app.run(debug=True, host=HOST, port=PORT)
