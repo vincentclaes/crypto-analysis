@@ -11,7 +11,7 @@ from random import randrange as rr
 
 from concurrent.futures import ThreadPoolExecutor
 
-executor = ThreadPoolExecutor(1)
+executor = ThreadPoolExecutor(2)
 
 import locale
 import os

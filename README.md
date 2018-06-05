@@ -63,6 +63,10 @@ server {
 }
 ```
 
+`sudo service nginx restart`
+`sudo service nginx start`
+`sudo service nginx stop`
+
 ### front end + back end
 
 #### start
