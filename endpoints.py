@@ -752,7 +752,7 @@ def graphdata():
 
 if __name__ == '__main__':
     handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=3)
-    logger = logging.getLogger('werkzeug')
+    logger = logging.getLogger(__name__)
     logger.setLevel(logging.ERROR)
     logger.addHandler(handler)
     PORT = int(os.getenv('PORT', 5004))
