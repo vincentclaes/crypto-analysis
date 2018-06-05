@@ -1,3 +1,4 @@
 import logging
-logging.basicConfig(level=logging.INFO)
+
+logging.basicConfig(filename='crypto-analysis.log', level=logging.DEBUG)
 logger = logging.getLogger('crypto_analysis')
