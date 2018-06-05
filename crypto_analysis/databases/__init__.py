@@ -18,9 +18,9 @@ class Connection(object):
     __metaclass__ = abc.ABCMeta
 
     @staticmethod
-    def get_connection(db):
+    def get_connection(db, check_same_thread=True):
         if 'sqlite' == db.lower():
-            return ConnectionSQLite.create_connection(db_path)
+            return ConnectionSQLite.create_connection(db_path, check_same_thread=check_same_thread)
         elif 'test' == db.lower():
             test_db = "/Users/vincent/Workspace/python/crypto-analysis/crypto_analysis_tests/test_database/coinmarketcap_data.db"
             return ConnectionSQLite.create_connection(test_db)
@@ -32,14 +32,14 @@ class Connection(object):
 
 class ConnectionSQLite(Connection):
     @staticmethod
-    def create_connection(db_file):
+    def create_connection(db_file, check_same_thread):
         """ create a database connection to the SQLite database
             specified by the db_file
         :param db_file: database file
         :return: Connection object or None
         """
         try:
-            conn = sqlite3.connect(db_file)
+            conn = sqlite3.connect(db_file, check_same_thread=check_same_thread)
             return conn
         except Error as e:
             print(e)

@@ -94,11 +94,15 @@ def rand_hex_color():
 def newcomers():
     rank = int(request.args.get('rank', 100))
     no = int(request.args.get('no', 10))
-    conn = Connection.get_connection(DB)
     if request.method == 'GET':
+        conn = Connection.get_connection(DB)
         newcomers = queries.get_newcomers(conn, rank, no)
         return render_template('examples/newcomers.html', **{'newcomers' : newcomers})
     elif request.method == 'POST':
+        # dont check same thread because we are using concurrency for this long running task
+        # https://stackoverflow.com/a/2894830/1771155
+        conn = Connection.get_connection(DB, check_same_thread=False)
+        # https://stackoverflow.com/questions/34321986/how-do-i-run-a-long-running-job-in-the-background-in-python
         executor.submit(controller_newcomers.get_newcomers, conn, rank, no)
         return jsonify({201: 'job submitted'})
 
