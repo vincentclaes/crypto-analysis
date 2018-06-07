@@ -1,7 +1,12 @@
 import unittest
+import os
 
 from crypto_analysis.databases import Connection
 from crypto_analysis.databases import queries
+from crypto_analysis.databases import get_db
+from crypto_analysis.controllers import newcomers
+from crypto_analysis_tests import TEST_ROOT
+import pandas as pd
 
 
 class TestQueries(unittest.TestCase):
@@ -23,6 +28,14 @@ class TestQueries(unittest.TestCase):
     def test_get_unique_ids_below_uuid(self):
         df = queries.get_unique_ids_below_uuid(self.conn, TestQueries.MAX_UUID, 100)
         self.assertEqual(df.shape[0], 145)
+
+    def test_check_if_newcomers_table_exists_and_get_max_uuid(self):
+        df = pd.read_csv(os.path.join(TEST_ROOT, 'test_files', 'test_newcomers_top100'), index_col=0)
+        newcomers.create_newcomers_table(df, 100, get_db(True))
+        table_name = newcomers.build_newcomers_table_name(100)
+        max_uuid_newcomers = queries.get_max_uuid_from_newcomers(self.conn, table_name)
+        self.assertEqual(max_uuid_newcomers, 1526409999)
+        # fixme - queries.drop_table(self.conn, table_name)
 
 
 if __name__ == '__main__':

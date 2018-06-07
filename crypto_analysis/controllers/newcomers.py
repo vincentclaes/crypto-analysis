@@ -9,7 +9,6 @@ from coinmarketcap import Market
 from dateutil.parser import parse as parse_date
 from sqlalchemy import create_engine
 
-from crypto_analysis.databases import db_path
 from crypto_analysis.databases import queries
 
 
@@ -21,8 +20,16 @@ def _get_newcomer_for_uuid(conn, uuid, rank):
     return newcomers
 
 
-def _get_newcomers(conn, rank, no):
-    uuids = queries.get_uuids(conn)
+def _get_uuids(conn, rank, latest_only):
+    if latest_only:
+        table_name = build_newcomers_table_name(rank)
+        latest_uuid = queries.get_max_uuid_from_newcomers(conn, table_name)
+        return queries.get_unique_uuids_above_latest_newcomer_uuid(conn, latest_uuid, rank)
+    return queries.get_uuids(conn)
+
+
+def _get_newcomers(conn, rank, no, latest_only):
+    uuids = _get_uuids(conn, rank, latest_only)
     ret_val = OrderedDict()
     for uuid in uuids:
         newcomer = _get_newcomer_for_uuid(conn, uuid, rank)
@@ -53,7 +60,7 @@ def _enrich_with_latest_data(conn, newcomers):
         newcomer_name = kwargs['newcomers'][coin].get('name')
         kwargs['newcomers'][coin]['name'] = kwargs['newcomers'][coin].get(
             'id').capitalize() if newcomer_name is None else newcomer_name
-        kwargs['newcomers'][coin]['date'] = kwargs['newcomers'][coin]['date'][:10]
+        # kwargs['newcomers'][coin]['date'] = kwargs['newcomers'][coin]['date'][:10]
     kwargs['newcomers'] = [kwargs['newcomers'][name] for name in
                            sorted(date_coin_mapping, key=date_coin_mapping.get, reverse=True)]
     return kwargs
@@ -63,23 +70,29 @@ def _construct_db_path(db_path):
     return 'sqlite:///{}'.format(db_path)
 
 
-def create_table(df, table_name, engine):
-    df.to_sql(table_name, engine, if_exists='replace')
+def build_newcomers_table_name(rank):
+    return 'newcomers_top{}'.format(str(rank))
 
 
-def get_newcomers(conn, rank, no=10):
+def create_newcomers_table(df, rank, db_path, latest_only):
+    _db_path = _construct_db_path(db_path)
+    engine = create_engine(_db_path)
+    table_name = build_newcomers_table_name(rank)
+    logging.info('dumping data in table {}'.format(table_name))
+    if_exists = 'replace'
+    if latest_only:
+        if_exists = 'append'
+    df.to_sql(table_name, engine, if_exists=if_exists)
+
+
+def get_newcomers(conn, db_path, rank, no=10, latest_only=False):
     logging.info('getting {} newcomers in rank {}'.format(no, rank))
-    newcomers = _get_newcomers(conn, rank, no)
+    newcomers = _get_newcomers(conn, rank, no, latest_only)
     newcomers = _enrich_with_latest_data(conn, newcomers)
     df_newcomers = pd.DataFrame(newcomers.get('newcomers'))
     logging.info('{} newcomers found'.format(df_newcomers.shape[0]))
     logging.info('{}'.format(df_newcomers.to_string()))
-    _db_path = _construct_db_path(db_path)
-    disk_engine = create_engine(_db_path)
-    table_name = 'newcomers_top{}'.format(str(rank))
-    logging.info('dumping data in table {}'.format(table_name))
-    create_table(df_newcomers, table_name, disk_engine)
+    create_newcomers_table(df_newcomers, rank, db_path, latest_only)
     logging.info('dump ok.')
     logging.info('done.')
     return newcomers
-

@@ -4,7 +4,9 @@ import sqlite3
 from sqlite3 import Error
 
 
-def get_db():
+def get_db(test=False):
+    if test is True:
+        return "/Users/vincent/Workspace/python/crypto-analysis/crypto_analysis_tests/test_database/coinmarketcap_data.db"
     db_path = "/Users/vincent/Workspace/coinmarketcap_data/coinmarketcap_data.db"
     if os.path.exists("/home/ec2-user/projects/data/coinmarketcap_data.db"):
         db_path = "/home/ec2-user/projects/data/coinmarketcap_data.db"

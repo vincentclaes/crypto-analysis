@@ -1,6 +1,6 @@
+import logging
 import pandas as pd
-import numpy as np
-from sqlalchemy import create_engine
+from sqlite3 import OperationalError
 
 
 def get_uuids(conn):
@@ -25,12 +25,14 @@ def get_data_for_uuid(conn, uuid, rank=100):
     df = df[df['rank'].astype(int) <= rank]
     return df
 
+
 def get_unique_ids_for_uuid(conn, uuid, rank=100):
     cur = conn.cursor()
     cur.execute("SELECT DISTINCT id FROM crypto_data where uuid=={}".format(uuid))
     df = pd.DataFrame(cur.fetchall())
     df.columns = [e[0] for e in cur.description]
     return df
+
 
 def get_data_below_uuid(conn, uuid, rank=100):
     cur = conn.cursor()
@@ -42,6 +44,17 @@ def get_data_below_uuid(conn, uuid, rank=100):
     df = df[df['rank'].astype(int) <= rank]
     return df
 
+def get_unique_uuids_above_latest_newcomer_uuid(conn, uuid, rank=100):
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT DISTINCT id FROM crypto_data where uuid>{} and rank <= {}".format(uuid, rank))
+    df = pd.DataFrame(cur.fetchall())
+    if df.empty:
+        logging.info('no new uuids found since {}'.format(uuid))
+        return []
+    df.columns = [e[0] for e in cur.description]
+    return df
+
 def get_unique_ids_below_uuid(conn, uuid, rank=100):
     cur = conn.cursor()
     cur.execute(
@@ -49,6 +62,7 @@ def get_unique_ids_below_uuid(conn, uuid, rank=100):
     df = pd.DataFrame(cur.fetchall())
     df.columns = [e[0] for e in cur.description]
     return df
+
 
 def get_highest_rank_for_coin(conn, coin):
     cur = conn.cursor()
@@ -75,3 +89,17 @@ def get_newcomers(conn, rank=100, no=10):
     df = pd.DataFrame(cur.fetchall(), columns=[element[0] for element in cur.description])
     return df
 
+
+def get_max_uuid_from_newcomers(conn, table_name):
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT max(uuid) FROM {}".format(table_name))
+    except OperationalError as e:
+        logging.ERROR("{} does not exist! we have to create it first".format(table_name))
+    return cur.fetchall()[0][0]
+
+
+def drop_table(conn, table_name):
+    # fixme - this statement does not seem to work
+    cur = conn.cursor()
+    cur.execute("DROP {}".format(table_name))

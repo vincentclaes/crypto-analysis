@@ -39,8 +39,14 @@ follow steps here https://docs.mongodb.com/manual/tutorial/install-mongodb-on-am
 
 ### sqlite
 
+move to ec2
+
 `mkdir ~/projects/data`
 `scp -i ~/.ssh/crypto-delta.pem coinmarketcap_data.db ec2-user@18.196.37.245:~/projects/data/coinmarketcap_data.db`
+
+manually move it locally 
+
+scp -i ~/.ssh/crypto-delta.pem ec2-user@18.196.37.245:~/projects/data/coinmarketcap_data.db coinmarketcap_data.db
 
 ### nginx
 
