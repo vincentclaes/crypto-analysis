@@ -6,6 +6,7 @@ import pandas as pd
 from mock import patch
 
 from crypto_analysis.controllers import newcomers
+from crypto_analysis.controllers.newcomers import Market
 from crypto_analysis.databases import Connection
 from crypto_analysis.databases import get_db
 from crypto_analysis_tests import TEST_ROOT
@@ -23,18 +24,16 @@ class TestNewcomers(unittest.TestCase):
         self.df_tail = pd.read_csv(os.path.join(TEST_ROOT, 'test_files', 'test_newcomers_df_tail'), index_col=0)
         self.newcomers = json.load(
             open(os.path.join(TEST_ROOT, 'test_files', 'test_newcomers_enrich_latest_data.json')))
+        self.coinmarket_data_current_results = json.load(
+            open(os.path.join(TEST_ROOT, 'test_files', 'coinmarket_data_current_results.json')))
 
-    def setupDB(self, df, rank, latest_only):
-        db_path = get_db(test=True)
-        newcomers.create_newcomers_table(df, rank, db_path, latest_only)
-
-    @patch('crypto_analysis.databases.queries.get_data_for_uuid')
     @patch('crypto_analysis.databases.queries.get_unique_ids_below_uuid')
-    def test_get_newcomer_for_uuid(self, m_tail, m_last):
+    @patch('crypto_analysis.databases.queries.get_data_for_uuid')
+    def test_get_newcomer_for_uuid(self, m_last, m_tail):
         m_last.return_value = self.df_last
         m_tail.return_value = self.df_tail
         newcomer = newcomers._get_newcomer_for_uuid(self.conn, 1526408353, 100)
-        self.assertEqual("my_coin", newcomer["my_coin"]["id"][0])
+        self.assertEqual("my_coin", newcomer["id"][0])
         self.assertEqual(1, newcomer.shape[0])
 
         # create my coin in tail so that it is not a newcomer
@@ -42,10 +41,12 @@ class TestNewcomers(unittest.TestCase):
         self.newcomer = newcomers._get_newcomer_for_uuid(self.conn, 1526408353, 100)
         self.assertTrue(self.newcomer.empty)
 
-    @patch('crypto_analysis.databases.queries.get_data_for_uuid')
+    @patch('crypto_analysis.databases.queries.get_highest_rank_for_coin')
     @patch('crypto_analysis.databases.queries.get_unique_ids_below_uuid')
-    @patch('crypto_analysis.controllers.newcomers._enrich_with_latest_data')
-    def test_get_newcomers(self, m_tail, m_last, m_enrich):
+    @patch('crypto_analysis.databases.queries.get_data_for_uuid')
+    @patch.object(Market, 'ticker')
+    def test_get_newcomers(self, m_enrich, m_last, m_tail, m_highest):
+        m_enrich.return_value = self.coinmarket_data_current_results
         m_last.return_value = self.df_last
         m_tail.return_value = self.df_tail
         db_path = get_db(test=True)
@@ -66,6 +67,9 @@ class TestNewcomers(unittest.TestCase):
         m_uuids_above.return_value = [1526401000]
         newcomer = newcomers._get_newcomers(self.conn, 100, 10, latest_only=True)
         self.assertEqual("my_coin", newcomer['my_coin']['id'])
+        m_highest.return_value = 100
+        newcomer = newcomers.get_newcomers(self.conn, 10)
+        self.assertEqual("my_coin", newcomer["newcomers"][0]["id"])
 
     @patch('crypto_analysis.databases.queries.get_highest_rank_for_coin')
     def test_enrich_with_latest_data(self, m_highest_rank):

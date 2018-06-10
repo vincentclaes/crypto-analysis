@@ -9,7 +9,9 @@ from coinmarketcap import Market
 from dateutil.parser import parse as parse_date
 from sqlalchemy import create_engine
 
+from crypto_analysis.databases import db_path
 from crypto_analysis.databases import queries
+from crypto_analysis.databases import Connection
 
 
 def _get_newcomer_for_uuid(conn, uuid, rank):
@@ -60,7 +62,7 @@ def _enrich_with_latest_data(conn, newcomers):
         newcomer_name = kwargs['newcomers'][coin].get('name')
         kwargs['newcomers'][coin]['name'] = kwargs['newcomers'][coin].get(
             'id').capitalize() if newcomer_name is None else newcomer_name
-        # kwargs['newcomers'][coin]['date'] = kwargs['newcomers'][coin]['date'][:10]
+        kwargs['newcomers'][coin]['date'] = kwargs['newcomers'][coin]['date'][:10]
     kwargs['newcomers'] = [kwargs['newcomers'][name] for name in
                            sorted(date_coin_mapping, key=date_coin_mapping.get, reverse=True)]
     return kwargs
@@ -70,6 +72,8 @@ def _construct_db_path(db_path):
     return 'sqlite:///{}'.format(db_path)
 
 
+def create_table(df, table_name, engine):
+    df.to_sql(table_name, engine, if_exists='append')
 def build_newcomers_table_name(rank):
     return 'newcomers_top{}'.format(str(rank))
 
@@ -92,7 +96,9 @@ def get_newcomers(conn, db_path, rank, no=10, latest_only=False):
     df_newcomers = pd.DataFrame(newcomers.get('newcomers'))
     logging.info('{} newcomers found'.format(df_newcomers.shape[0]))
     logging.info('{}'.format(df_newcomers.to_string()))
-    create_newcomers_table(df_newcomers, rank, db_path, latest_only)
+    table_name = 'newcomers_top{}'.format(str(rank))
+    logging.info('dumping data in table {}'.format(table_name))
+    create_table(df_newcomers, table_name, conn)
     logging.info('dump ok.')
     logging.info('done.')
     return newcomers
