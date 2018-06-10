@@ -1,1 +1,20 @@
-[{"market_cap_usd": "62791782.0", "price_usd": "0.414457", "last_updated": "1528399489", "name": "NKN", "24h_volume_usd": "2834180.0", "percent_change_7d": "9.64", "symbol": "NKN", "max_supply": null, "rank": "179", "percent_change_1h": "-1.03", "total_supply": "700000000.0", "cached": false, "price_btc": "0.00005384", "available_supply": "151503731.0", "percent_change_24h": "-8.68", "id": "nkn"}]
+[
+  {
+    "market_cap_usd": "62791782.0",
+    "price_usd": "0.414457",
+    "last_updated": "1528399489",
+    "name": "NKN",
+    "24h_volume_usd": "2834180.0",
+    "percent_change_7d": "9.64",
+    "symbol": "NKN",
+    "max_supply": null,
+    "rank": "179",
+    "percent_change_1h": "-1.03",
+    "total_supply": "700000000.0",
+    "cached": false,
+    "price_btc": "0.00005384",
+    "available_supply": "151503731.0",
+    "percent_change_24h": "-8.68",
+    "id": "nkn"
+  }
+]

@@ -8,7 +8,6 @@ from mock import patch
 from crypto_analysis.controllers import newcomers
 from crypto_analysis.controllers.newcomers import Market
 from crypto_analysis.databases import Connection
-from crypto_analysis.databases import get_db
 from crypto_analysis_tests import TEST_ROOT
 
 
@@ -49,15 +48,18 @@ class TestNewcomers(unittest.TestCase):
         m_enrich.return_value = self.coinmarket_data_current_results
         m_last.return_value = self.df_last
         m_tail.return_value = self.df_tail
-        db_path = get_db(test=True)
-        newcomer = newcomers.get_newcomers(self.conn, db_path, 100, 10)
-        self.assertEqual("my_coin", newcomer["my_coin"]["id"][0])
+        m_highest.return_value = 100
+        newcomer = newcomers.get_newcomers(self.conn, 10)
+        self.assertEqual("my_coin", newcomer["newcomers"][0]["id"])
 
     @patch('crypto_analysis.databases.queries.get_max_uuid_from_newcomers')
     @patch('crypto_analysis.databases.queries.get_unique_uuids_above_latest_newcomer_uuid')
     @patch('crypto_analysis.databases.queries.get_data_for_uuid')
     @patch('crypto_analysis.databases.queries.get_unique_ids_below_uuid')
-    def test_get_newcomers_latest_only(self,m_tail, m_last, m_uuids_above, m_max_uuid):
+    def test_get_newcomers_latest_only(self, m_tail, m_last, m_uuids_above, m_max_uuid):
+        # the latest uuid in the newcomers table is 1526409999
+        # when looking for newcomers we only get the latest data
+        # for uuids > 1526409999
         self.df_last['uuid'][0] = 1526401000
         self.df_last['uuid'][1] = 1526401000
         self.df_last['uuid'][2] = 1526401000
@@ -67,13 +69,9 @@ class TestNewcomers(unittest.TestCase):
         m_uuids_above.return_value = [1526401000]
         newcomer = newcomers._get_newcomers(self.conn, 100, 10, latest_only=True)
         self.assertEqual("my_coin", newcomer['my_coin']['id'])
-        m_highest.return_value = 100
-        newcomer = newcomers.get_newcomers(self.conn, 10)
-        self.assertEqual("my_coin", newcomer["newcomers"][0]["id"])
 
     @patch('crypto_analysis.databases.queries.get_highest_rank_for_coin')
     def test_enrich_with_latest_data(self, m_highest_rank):
         newcomers_enriched = newcomers._enrich_with_latest_data(self.conn, self.newcomers)
         df = pd.DataFrame(newcomers_enriched.get('newcomers'))
         self.assertTrue(all(df["name"].tolist()))
-
