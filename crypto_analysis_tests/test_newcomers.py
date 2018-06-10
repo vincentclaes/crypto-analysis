@@ -6,6 +6,7 @@ import pandas as pd
 from mock import patch
 
 from crypto_analysis.controllers import newcomers
+from crypto_analysis.controllers.newcomers import Market
 from crypto_analysis.databases import Connection
 from crypto_analysis_tests import TEST_ROOT
 
@@ -22,6 +23,8 @@ class TestNewcomers(unittest.TestCase):
         self.df_tail = pd.read_csv(os.path.join(TEST_ROOT, 'test_files', 'test_newcomers_df_tail'), index_col=0)
         self.newcomers = json.load(
             open(os.path.join(TEST_ROOT, 'test_files', 'test_newcomers_enrich_latest_data.json')))
+        self.coinmarket_data_current_results = json.load(
+            open(os.path.join(TEST_ROOT, 'test_files', 'coinmarket_data_current_results.json')))
 
     @patch('crypto_analysis.databases.queries.get_unique_ids_below_uuid')
     @patch('crypto_analysis.databases.queries.get_data_for_uuid')
@@ -37,14 +40,17 @@ class TestNewcomers(unittest.TestCase):
         self.newcomer = newcomers._get_newcomer_for_uuid(self.conn, 1526408353, 100)
         self.assertTrue(self.newcomer.empty)
 
+    @patch('crypto_analysis.databases.queries.get_highest_rank_for_coin')
     @patch('crypto_analysis.databases.queries.get_unique_ids_below_uuid')
     @patch('crypto_analysis.databases.queries.get_data_for_uuid')
-    @patch('crypto_analysis.controllers.newcomers._enrich_with_latest_data')
-    def test_get_newcomers(self, m_last, m_tail, m_enrich):
+    @patch.object(Market, 'ticker')
+    def test_get_newcomers(self, m_enrich, m_last, m_tail, m_highest):
+        m_enrich.return_value = self.coinmarket_data_current_results
         m_last.return_value = self.df_last
         m_tail.return_value = self.df_tail
+        m_highest.return_value = 100
         newcomer = newcomers.get_newcomers(self.conn, 10)
-        self.assertEqual("my_coin", newcomer["id"][0])
+        self.assertEqual("my_coin", newcomer["newcomers"][0]["id"])
 
     @patch('crypto_analysis.databases.queries.get_highest_rank_for_coin')
     def test_enrich_with_latest_data(self, m_highest_rank):

@@ -11,6 +11,7 @@ from sqlalchemy import create_engine
 
 from crypto_analysis.databases import db_path
 from crypto_analysis.databases import queries
+from crypto_analysis.databases import Connection
 
 
 def _get_newcomer_for_uuid(conn, uuid, rank):
@@ -64,7 +65,7 @@ def _construct_db_path(db_path):
 
 
 def create_table(df, table_name, engine):
-    df.to_sql(table_name, engine, if_exists='replace')
+    df.to_sql(table_name, engine, if_exists='append')
 
 
 def get_newcomers(conn, rank, no=10):
@@ -74,11 +75,9 @@ def get_newcomers(conn, rank, no=10):
     df_newcomers = pd.DataFrame(newcomers.get('newcomers'))
     logging.info('{} newcomers found'.format(df_newcomers.shape[0]))
     logging.info('{}'.format(df_newcomers.to_string()))
-    _db_path = _construct_db_path(db_path)
-    disk_engine = create_engine(_db_path)
     table_name = 'newcomers_top{}'.format(str(rank))
     logging.info('dumping data in table {}'.format(table_name))
-    create_table(df_newcomers, table_name, disk_engine)
+    create_table(df_newcomers, table_name, conn)
     logging.info('dump ok.')
     logging.info('done.')
     return newcomers
