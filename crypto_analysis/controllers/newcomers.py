@@ -80,7 +80,7 @@ def build_newcomers_table_name(rank):
     return table_name
 
 
-def create_newcomers_table(df, rank, conn, latest_only=False):
+def create_newcomers_table(df, rank, conn, latest_only):
     table_name = build_newcomers_table_name(rank)
     if_exists = 'replace'
     if latest_only:
@@ -88,7 +88,7 @@ def create_newcomers_table(df, rank, conn, latest_only=False):
     create_table(df, table_name, conn, if_exists)
 
 
-def get_newcomers(conn, rank, no=10, latest_only=False):
+def get_newcomers(conn, rank, no=10, latest_only=True):
     logging.info('getting {} newcomers in rank {}'.format(no, rank))
     newcomers = _get_newcomers(conn, rank, no, latest_only)
     newcomers = _enrich_with_latest_data(conn, newcomers)

@@ -97,6 +97,7 @@ def rand_hex_color():
 def newcomers():
     rank = int(request.args.get('rank', 100))
     no = int(request.args.get('no', 10))
+    latest = int(request.args.get('latest', True))
     if request.method == 'GET':
         conn = Connection.get_connection(DB)
         newcomers = queries.get_newcomers(conn, rank, no)
@@ -107,7 +108,7 @@ def newcomers():
         conn = Connection.get_connection(DB, check_same_thread=False)
         db_path = get_db()
         # https://stackoverflow.com/questions/34321986/how-do-i-run-a-long-running-job-in-the-background-in-python
-        executor.submit(controller_newcomers.get_newcomers, conn, db_path, rank, no)
+        executor.submit(controller_newcomers.get_newcomers, conn, db_path, rank, no, latest)
         return jsonify({201: 'job submitted'})
 
 

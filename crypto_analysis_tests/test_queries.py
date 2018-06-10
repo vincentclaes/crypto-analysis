@@ -31,7 +31,7 @@ class TestQueries(unittest.TestCase):
 
     def test_check_if_newcomers_table_exists_and_get_max_uuid(self):
         df = pd.read_csv(os.path.join(TEST_ROOT, 'test_files', 'test_newcomers_top100'), index_col=0)
-        newcomers.create_newcomers_table(df, 100, self.conn)
+        newcomers.create_newcomers_table(df, 100, self.conn, False)
         table_name = newcomers.build_newcomers_table_name(100)
         max_uuid_newcomers = queries.get_max_uuid_from_newcomers(self.conn, table_name)
         self.assertEqual(max_uuid_newcomers, 1526409999)
