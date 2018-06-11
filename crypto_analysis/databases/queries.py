@@ -1,7 +1,15 @@
 import logging
-import pandas as pd
 from sqlite3 import OperationalError
 
+import pandas as pd
+
+
+def table_exists(conn, table_name):
+    cur = conn.cursor()
+    cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='{}'".format(table_name))
+    if cur.fetchall():
+        return True
+    return False
 
 def get_uuids(conn):
     cur = conn.cursor()
@@ -46,14 +54,18 @@ def get_data_below_uuid(conn, uuid, rank=100):
 
 def get_unique_uuids_above_latest_newcomer_uuid(conn, uuid, rank=100):
     cur = conn.cursor()
-    cur.execute(
-        "SELECT DISTINCT id FROM crypto_data where uuid>{} and rank <= {}".format(uuid, rank))
-    df = pd.DataFrame(cur.fetchall())
-    if df.empty:
-        logging.info('no new uuids found since {}'.format(uuid))
-        return []
-    df.columns = [e[0] for e in cur.description]
-    return df
+    results = cur.execute(
+        "select distinct uuid from crypto_data where uuid>{} order by uuid desc".format(uuid)).fetchall()
+    # cur.execute(
+    #     "SELECT DISTINCT id FROM crypto_data where uuid>{} and rank <= {}".format(uuid, rank))
+    uuids = [element[0] for element in results]
+    return uuids
+    # df = pd.DataFrame(cur.fetchall())
+    # if df.empty:
+    #     logging.info('no new uuids found since {}'.format(uuid))
+    #     return []
+    # df.columns = [e[0] for e in cur.description]
+    # return df
 
 def get_unique_ids_below_uuid(conn, uuid, rank=100):
     cur = conn.cursor()

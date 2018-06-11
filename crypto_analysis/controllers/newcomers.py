@@ -20,8 +20,8 @@ def _get_newcomer_for_uuid(conn, uuid, rank):
 
 
 def _get_uuids(conn, rank, latest_only):
-    if latest_only:
-        table_name = build_newcomers_table_name(rank)
+    table_name = build_newcomers_table_name(rank)
+    if latest_only and queries.table_exists(conn, table_name):
         latest_uuid = queries.get_max_uuid_from_newcomers(conn, table_name)
         return queries.get_unique_uuids_above_latest_newcomer_uuid(conn, latest_uuid, rank)
     return queries.get_uuids(conn)
@@ -95,6 +95,6 @@ def get_newcomers(conn, rank, no=10, latest_only=True):
     df_newcomers = pd.DataFrame(newcomers.get('newcomers'))
     logging.info('{} newcomers found'.format(df_newcomers.shape[0]))
     logging.info('{}'.format(df_newcomers.to_string()))
-    create_newcomers_table(df_newcomers, rank, conn, latest_only='replace')
+    create_newcomers_table(df_newcomers, rank, conn, latest_only)
     logging.info('done.')
     return newcomers
