@@ -97,7 +97,7 @@ def rand_hex_color():
 def newcomers():
     rank = int(request.args.get('rank', 100))
     no = int(request.args.get('no', 10))
-    latest = bool(request.args.get('latest', True))
+    latest = False if request.args.get('latest') == 'false' else True
     if request.method == 'GET':
         conn = Connection.get_connection(DB)
         newcomers = queries.get_newcomers(conn, rank, no)
@@ -756,7 +756,7 @@ def graphdata():
 if __name__ == '__main__':
     handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=3)
     logger = logging.getLogger(__name__)
-    logger.setLevel(logging.ERROR)
+    logger.setLevel(logging.DEBUG)
     logger.addHandler(handler)
     PORT = int(os.getenv('PORT', 5004))
     HOST = os.getenv('HOST', '0.0.0.0')
