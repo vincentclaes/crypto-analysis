@@ -70,8 +70,9 @@ class TestNewcomers(unittest.TestCase):
         newcomer = newcomers._get_newcomers(self.conn, 100, 10, latest_only=True)
         self.assertEqual("my_coin", newcomer['my_coin']['id'])
 
+    @patch.object(Market, 'ticker')
     @patch('crypto_analysis.databases.queries.get_highest_rank_for_coin')
-    def test_enrich_with_latest_data(self, m_highest_rank):
+    def test_enrich_with_latest_data(self, m_highest_rank, m_ticker):
         newcomers_enriched = newcomers._enrich_with_latest_data(self.conn, self.newcomers)
         df = pd.DataFrame(newcomers_enriched.get('newcomers'))
         self.assertTrue(all(df["name"].tolist()))
