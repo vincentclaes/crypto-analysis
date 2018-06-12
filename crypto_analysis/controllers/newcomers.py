@@ -2,6 +2,7 @@
 get newcomers and dump in a table. we expect the rank as 1st argument.
 """
 import argparse
+import logging
 from collections import OrderedDict
 
 import pandas as pd
@@ -104,14 +105,11 @@ def get_newcomers(conn, rank, no=10, latest_only=True):
 
 
 if __name__ == '__main__':
-    import logging
-
-    logging.basicConfig(level=logging.DEBUG)
-
     from crypto_analysis.databases import Connection
     from crypto_analysis.databases import DB
 
     conn = Connection.get_connection(DB)
+    logging.basicConfig(level=logging.DEBUG)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-r", "--rank", help="rank you want to use", type=int, required=True)
