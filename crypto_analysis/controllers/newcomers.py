@@ -1,7 +1,6 @@
 """
 get newcomers and dump in a table. we expect the rank as 1st argument.
 """
-import argparse
 import logging
 from collections import OrderedDict
 
@@ -104,16 +103,4 @@ def get_newcomers(conn, rank, no=10, latest_only=True):
     return newcomers
 
 
-if __name__ == '__main__':
-    from crypto_analysis.databases import Connection
-    from crypto_analysis.databases import DB
 
-    conn = Connection.get_connection(DB)
-    logging.basicConfig(level=logging.DEBUG)
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-r", "--rank", help="rank you want to use", type=int, required=True)
-    parser.add_argument("-n", "--no", help="number of results you want", type=int, required=True)
-    parser.add_argument("--latest", help="do i only want to get the latest newcomers", action="store_true")
-    args = parser.parse_args()
-    get_newcomers(conn, args.rank, args.no, args.latest)
