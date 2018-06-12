@@ -1,7 +1,7 @@
 """
 get newcomers and dump in a table. we expect the rank as 1st argument.
 """
-import logging
+import argparse
 from collections import OrderedDict
 
 import pandas as pd
@@ -12,7 +12,6 @@ from crypto_analysis.databases import queries
 
 
 def _get_newcomer_for_uuid(conn, uuid, rank):
-    logging.info('getting newcomers for uuid {}'.format(uuid))
     df_last = queries.get_data_for_uuid(conn, uuid, rank)
     df_tail = queries.get_unique_ids_below_uuid(conn, uuid, rank)
     newcomers = df_last[~df_last["id"].isin(df_tail["id"])]
@@ -29,8 +28,10 @@ def _get_uuids(conn, rank, latest_only):
 
 def _get_newcomers(conn, rank, no, latest_only):
     uuids = _get_uuids(conn, rank, latest_only)
+    len_uuids = len(uuids)
     ret_val = OrderedDict()
-    for uuid in uuids:
+    for i, uuid in enumerate(uuids):
+        logging.info('{}/{} - getting newcomers for uuid {}'.format(i, len_uuids, uuid))
         newcomer = _get_newcomer_for_uuid(conn, uuid, rank)
         if newcomer.empty:
             logging.info("no newcomers found for uuid {}".format(uuid))
@@ -93,8 +94,28 @@ def get_newcomers(conn, rank, no=10, latest_only=True):
     newcomers = _get_newcomers(conn, rank, no, latest_only)
     newcomers = _enrich_with_latest_data(conn, newcomers)
     df_newcomers = pd.DataFrame(newcomers.get('newcomers'))
-    logging.info('{} newcomers found'.format(df_newcomers.shape[0]))
     logging.info('{}'.format(df_newcomers.to_string()))
+    if df_newcomers.empty:
+        return
+    logging.info('{} newcomers found'.format(df_newcomers.shape[0]))
     create_newcomers_table(df_newcomers, rank, conn, latest_only)
     logging.info('done.')
     return newcomers
+
+
+if __name__ == '__main__':
+    import logging
+
+    logging.basicConfig(level=logging.DEBUG)
+
+    from crypto_analysis.databases import Connection
+    from crypto_analysis.databases import DB
+
+    conn = Connection.get_connection(DB)
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-r", "--rank", help="rank you want to use", type=int, required=True)
+    parser.add_argument("-n", "--no", help="number of results you want", type=int, required=True)
+    parser.add_argument("--latest", help="do i only want to get the latest newcomers", action="store_true")
+    args = parser.parse_args()
+    get_newcomers(conn, args.rank, args.no, args.latest)

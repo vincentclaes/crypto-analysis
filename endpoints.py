@@ -31,7 +31,6 @@ from flask_cors import cross_origin
 from crypto_analysis.databases import Connection
 from crypto_analysis.databases import DB
 from crypto_analysis.databases import queries
-from crypto_analysis.databases import get_db
 from crypto_analysis.controllers import newcomers as controller_newcomers
 
 app = Flask('endpoints_test')
@@ -106,7 +105,6 @@ def newcomers():
         # dont check same thread because we are using concurrency for this long running task
         # https://stackoverflow.com/a/2894830/1771155
         conn = Connection.get_connection(DB, check_same_thread=False)
-        db_path = get_db()
         # https://stackoverflow.com/questions/34321986/how-do-i-run-a-long-running-job-in-the-background-in-python
         executor.submit(controller_newcomers.get_newcomers, conn, rank, no, latest)
         return jsonify({201: 'job submitted'})
