@@ -1,10 +1,14 @@
-import requests
 from datetime import timedelta
 
 import airflow
+import requests
+from airflow.contrib.hooks import SSHHook
+from airflow.contrib.operators.ssh_execute_operator import SSHExecuteOperator
 from airflow.models import DAG
 from airflow.operators.bash_operator import BashOperator
-from airflow.operators.python_operator import PythonOperator
+
+sshHook = SSHHook(conn_id="delta-crypto")
+
 
 args = {
     'owner': 'airflow',
@@ -28,18 +32,16 @@ get_coinmarketcap_data = BashOperator(
     bash_command='sudo python /home/ec2-user/projects/coinmarketcap_data/coinmarketcap_data.py',
     dag=dag)
 
-create_newcomers_top100 = PythonOperator(
-    task_id='create_newcomers_top100',
-    provide_context=True,
-    python_callable=create_newcomers,
-    op_kwargs={'rank': 100, 'no' : 25},
+create_newcomers_top100 = SSHExecuteOperator(
+    task_id="create_newcomers_top100",
+    bash_command="""sudo python /home/ec2-user/projects/crypto-analysis/entry.py --rank 100 --no 10 --latest""",
+    ssh_hook=sshHook,
     dag=dag)
 
-create_newcomers_top200 = PythonOperator(
-    task_id='create_newcomers_top200',
-    provide_context=True,
-    python_callable=create_newcomers,
-    op_kwargs={'rank': 200, 'no' : 25},
+create_newcomers_top200 = SSHExecuteOperator(
+    task_id="create_newcomers_top200",
+    bash_command="""sudo python /home/ec2-user/projects/crypto-analysis/entry.py --rank 200 --no 10 --latest""",
+    ssh_hook=sshHook,
     dag=dag)
 
 
