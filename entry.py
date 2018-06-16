@@ -2,6 +2,7 @@ import argparse
 import logging
 
 from crypto_analysis.controllers import newcomers
+from crypto_analysis.controllers import tweets
 from crypto_analysis.databases import Connection
 from crypto_analysis.databases import DB
 
@@ -11,7 +12,7 @@ def get_newcomers(args):
 
 
 def tweet(args):
-    pass
+    tweets.tweet(args.ids, args.rank)
 
 
 if __name__ == '__main__':
@@ -30,7 +31,7 @@ if __name__ == '__main__':
 
     get_newcomers_parser = subparsers.add_parser("tweet")
     get_newcomers_parser.add_argument("-r", "--rank", help="rank you want to use", type=int, required=True)
-    get_newcomers_parser.add_argument("-i", "--ids", help="ids you want to tweet", nargs='+', required=True)
+    get_newcomers_parser.add_argument("-i", "--ids", help="ids you want to tweet", nargs='*')
     get_newcomers_parser.set_defaults(func=tweet)
 
     args = parser.parse_args()
