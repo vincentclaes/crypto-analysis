@@ -100,7 +100,4 @@ def get_newcomers(conn, rank, no=10, latest_only=True):
     logging.info('{} newcomers found'.format(df_newcomers.shape[0]))
     create_newcomers_table(df_newcomers, rank, conn, latest_only)
     logging.info('done.')
-    return newcomers
-
-
-
+    return ' '.join([newcomer.get('id') for newcomer in newcomers.get('newcomers')])
