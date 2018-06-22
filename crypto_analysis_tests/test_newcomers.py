@@ -50,7 +50,7 @@ class TestNewcomers(unittest.TestCase):
         m_tail.return_value = self.df_tail
         m_highest.return_value = 100
         newcomer = newcomers.get_newcomers(self.conn, 100, latest_only=False)
-        self.assertEqual("my_coin", newcomer["newcomers"][0]["id"])
+        self.assertEqual("my_coin", newcomer)
 
     @patch('crypto_analysis.databases.queries.get_max_uuid_from_newcomers')
     @patch('crypto_analysis.databases.queries.get_unique_uuids_above_latest_newcomer_uuid')
