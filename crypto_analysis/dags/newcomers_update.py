@@ -15,7 +15,7 @@ args = {
 
 dag = DAG(
     dag_id='newcomers_update', default_args=args,
-    schedule_interval="*/20 * * * *",
+    schedule_interval="20 * * * *",
     dagrun_timeout=timedelta(minutes=60))
 
 

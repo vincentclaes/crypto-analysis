@@ -39,13 +39,13 @@ create_newcomers_top100 = SSHExecuteOperator(
     task_id="create_newcomers_top100",
     bash_command="""echo my_coin""",
     ssh_hook=sshHook,
-    context=True,
+    xcom_push=True,
     dag=dag)
 
 tweet_newcomers_top100 = SSHExecuteOperator(
     task_id='tweet_newcomers',
     provide_context=True,
-    bash_command="""sudo python /home/ec2-user/projects/crypto-analysis/entry.py tweet --rank 100 --id {{ task_instance.xcom_pull(task_ids='create_newcomers_top100') }}""",
+    bash_command="""sudo python /home/ec2-user/projects/crypto-analysis/entry.py tweet --rank 100 --id {{ ti.xcom_pull(task_ids='create_newcomers_top100') }}""",
     ssh_hook=sshHook,
     dag=dag)
 
