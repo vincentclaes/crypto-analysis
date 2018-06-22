@@ -38,20 +38,6 @@ if __name__ == '__main__':
                                       action="store_true")
     get_newcomers_parser.set_defaults(func=get_newcomers)
 
-    get_newcomers_parser = subparsers.add_parser("tweet")
-    get_newcomers_parser.add_argument("-r", "--rank", help="rank you want to use", type=int, required=True)
-    get_newcomers_parser.add_argument("-i", "--ids", help="ids you want to tweet", nargs='*')
-    get_newcomers_parser.set_defaults(func=tweet)
-
-    subparsers = parser.add_subparsers(help='extra functions for newcomers, notifications etc.')
-
-    get_newcomers_parser = subparsers.add_parser("newcomers")
-    get_newcomers_parser.add_argument("-r", "--rank", help="rank you want to use", type=int, required=True)
-    get_newcomers_parser.add_argument("-n", "--no", help="number of results you want", type=int, required=True)
-    get_newcomers_parser.add_argument("--latest", help="do i only want to get the latest newcomers",
-                                      action="store_true")
-    get_newcomers_parser.set_defaults(func=get_newcomers)
-
     update_newcomers_parser = subparsers.add_parser("newcomers_update")
     update_newcomers_parser.add_argument("-r", "--rank", help="rank you want to use", type=int, required=True)
     update_newcomers_parser.set_defaults(func=update_newcomers)
