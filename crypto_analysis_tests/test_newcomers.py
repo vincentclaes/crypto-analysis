@@ -49,7 +49,7 @@ class TestNewcomers(unittest.TestCase):
         m_last.return_value = self.df_last
         m_tail.return_value = self.df_tail
         m_highest.return_value = 100
-        newcomer = newcomers.get_newcomers(self.conn, 10, latest_only=False)
+        newcomer = newcomers.get_newcomers(self.conn, 100, latest_only=False)
         self.assertEqual("my_coin", newcomer["newcomers"][0]["id"])
 
     @patch('crypto_analysis.databases.queries.get_max_uuid_from_newcomers')
@@ -76,3 +76,18 @@ class TestNewcomers(unittest.TestCase):
         newcomers_enriched = newcomers._enrich_with_latest_data(self.conn, self.newcomers)
         df = pd.DataFrame(newcomers_enriched.get('newcomers'))
         self.assertTrue(all(df["name"].tolist()))
+
+    @patch('crypto_analysis.databases.queries.get_highest_rank_for_coin')
+    @patch.object(Market, 'ticker')
+    def test_update_newcomers(self, m_ticker, m_high):
+        ticker_ = [{u'market_cap_usd': u'115143593697', u'price_usd': u'6730.68', u'last_updated': u'1529612676',
+                    u'name': u'Bitcoin', u'24h_volume_usd': u'3542700000.0', u'percent_change_7d': u'1.76',
+                    u'symbol': u'BTC', u'price_btc': u'1.0', u'rank': u'1', u'percent_change_1h': u'0.12',
+                    u'total_supply': u'17107275.0', u'cached': False, u'max_supply': u'21000000.0',
+                    u'available_supply': u'17107275.0', u'percent_change_24h': u'-0.65', u'id': u'bitcoin'}]
+        m_ticker.return_value = ticker_
+        m_high.return_value = 666
+        updated_df = newcomers.update_newcomers(self.conn, 10)
+        self.assertEqual(updated_df['current_rank'].iloc[0], u'1')
+        self.assertEqual(updated_df['percent_change_24h'].iloc[0], u'-0.65')
+        self.assertEqual(updated_df['highest_rank'].iloc[0], 666)

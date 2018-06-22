@@ -115,3 +115,10 @@ def drop_table(conn, table_name):
     # fixme - this statement does not seem to work
     cur = conn.cursor()
     cur.execute("DROP {}".format(table_name))
+
+
+def get_newcomers_table(conn, table):
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM {}".format(table))
+    df = pd.DataFrame(cur.fetchall(), columns=[element[0] for element in cur.description])
+    return df

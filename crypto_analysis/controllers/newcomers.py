@@ -103,4 +103,17 @@ def get_newcomers(conn, rank, no=10, latest_only=True):
     return newcomers
 
 
-
+def update_newcomers(conn, rank):
+    table = build_newcomers_table_name(rank)
+    df_newcomers = queries.get_newcomers_table(conn, table)
+    coinmarketcap = Market()
+    df_ret_val = df_newcomers.copy()
+    for coin in df_newcomers['id']:
+        index = df_ret_val.index[df_ret_val['id'] == coin][0]
+        logging.info('{} is located on index {}'.format(coin, index))
+        current_results = coinmarketcap.ticker(coin)
+        df_ret_val['current_rank'].iloc[index] = current_results[0]['rank']
+        df_ret_val['percent_change_24h'].iloc[index] = current_results[0]['percent_change_24h']
+        highest_rank = queries.get_highest_rank_for_coin(conn, coin)
+        df_ret_val['highest_rank'].iloc[index] = highest_rank
+    return df_ret_val
