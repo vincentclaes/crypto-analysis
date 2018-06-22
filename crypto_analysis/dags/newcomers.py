@@ -27,6 +27,12 @@ def create_newcomers(rank, no, *args, **kwargs):
     result = requests.request("POST", url, params=querystring)
     print(result.content)
 
+
+def tweet(task_id, rank, *args, **kwargs):
+    ti = kwargs['ti']
+    ls = ti.xcom_pull(task_ids=task_id)
+    print(ls)
+
 get_coinmarketcap_data = BashOperator(
     task_id='get_coinmarketcap_data',
     bash_command='sudo python /home/ec2-user/projects/coinmarketcap_data/coinmarketcap_data.py',
@@ -36,12 +42,21 @@ create_newcomers_top100 = SSHExecuteOperator(
     task_id="create_newcomers_top100",
     bash_command="""sudo python /home/ec2-user/projects/crypto-analysis/entry.py --rank 100 --no 10 --latest""",
     ssh_hook=sshHook,
+    context=True,
     dag=dag)
+
+tweet_newcomers_top100 = SSHExecuteOperator(
+    task_id='tweet_newcomers',
+    provide_context=True,
+    bash_command="""sudo python /home/ec2-user/projects/crypto-analysis/entry.py tweet --rank 100 --id {{ task_instance.xcom_pull(task_ids='create_newcomers_top100') }}""",
+    ssh_hook=sshHook,
+    dag=DAG)
 
 create_newcomers_top200 = SSHExecuteOperator(
     task_id="create_newcomers_top200",
     bash_command="""sudo python /home/ec2-user/projects/crypto-analysis/entry.py --rank 200 --no 10 --latest""",
     ssh_hook=sshHook,
+    context=True,
     dag=dag)
 
 

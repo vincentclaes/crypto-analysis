@@ -11,6 +11,7 @@ def table_exists(conn, table_name):
         return True
     return False
 
+
 def get_uuids(conn):
     cur = conn.cursor()
     # results = cur.execute("select uuid from crypto_data group by date order by uuid desc").fetchall()
@@ -52,6 +53,7 @@ def get_data_below_uuid(conn, uuid, rank=100):
     df = df[df['rank'].astype(int) <= rank]
     return df
 
+
 def get_unique_uuids_above_latest_newcomer_uuid(conn, uuid, rank=100):
     cur = conn.cursor()
     results = cur.execute(
@@ -66,6 +68,7 @@ def get_unique_uuids_above_latest_newcomer_uuid(conn, uuid, rank=100):
     #     return []
     # df.columns = [e[0] for e in cur.description]
     # return df
+
 
 def get_unique_ids_below_uuid(conn, uuid, rank=100):
     cur = conn.cursor()

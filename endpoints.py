@@ -91,7 +91,7 @@ def rand_hex_color():
 
 
 @cross_origin()
-@app.route('/newcomers', methods=['GET', 'POST'])
+@app.route('/newcomers', methods=['GET'])
 #@cache.cached(timeout=10800, query_string=True)
 def newcomers():
     rank = int(request.args.get('rank', 100))
@@ -101,6 +101,8 @@ def newcomers():
         conn = Connection.get_connection(DB)
         newcomers = queries.get_newcomers(conn, rank, no)
         return render_template('examples/newcomers.html', **{'newcomers' : newcomers})
+    # we have disabled post because we are not handling it via this way
+    # we will call immediately from airflow the cli
     elif request.method == 'POST':
         # dont check same thread because we are using concurrency for this long running task
         # https://stackoverflow.com/a/2894830/1771155
