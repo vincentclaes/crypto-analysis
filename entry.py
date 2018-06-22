@@ -19,11 +19,6 @@ def update_newcomers(args):
     newcomers.update_newcomers(conn, args.rank)
 
 
-def tweet(args):
-    # tweets.tweet(args.ids, args.rank)
-    pass
-
-
 if __name__ == '__main__':
     conn = Connection.get_connection(DB)
     logging.basicConfig(level=logging.DEBUG)
