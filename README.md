@@ -29,6 +29,19 @@ install pipenv
 `sudo fuser -k 8080/tcp`
 
 
+#### connections
+
+Host crypto-analysis
+  User ec2-user
+  HostName check aws dashboard
+  IdentityFile ~/.ssh/crypto-delta.pem
+
+port: 22
+
+extra:
+
+{"key_file": "/home/ec2-user/.ssh/crypto-delta.pem", "no_host_key_check": true}
+
 ### mongo
 
 follow steps here https://docs.mongodb.com/manual/tutorial/install-mongodb-on-amazon/

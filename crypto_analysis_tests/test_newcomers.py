@@ -87,7 +87,7 @@ class TestNewcomers(unittest.TestCase):
                     u'available_supply': u'17107275.0', u'percent_change_24h': u'-0.65', u'id': u'bitcoin'}]
         m_ticker.return_value = ticker_
         m_high.return_value = 666
-        updated_df = newcomers.update_newcomers(self.conn, 10)
+        updated_df = newcomers.update_newcomers(self.conn, 100)
         self.assertEqual(updated_df['current_rank'].iloc[0], u'1')
         self.assertEqual(updated_df['percent_change_24h'].iloc[0], u'-0.65')
         self.assertEqual(updated_df['highest_rank'].iloc[0], 666)

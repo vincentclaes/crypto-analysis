@@ -69,9 +69,9 @@ def _construct_db_path(db_path):
     return 'sqlite:///{}'.format(db_path)
 
 
-def create_table(df, table_name, conn, if_exists):
+def create_table(df, table_name, conn, if_exists, index=True):
     logging.info('dumping data in table {}'.format(table_name))
-    df.to_sql(table_name, conn, if_exists=if_exists)
+    df.to_sql(table_name, conn, if_exists=if_exists, index=index)
     logging.info('dump ok.')
 
 
@@ -104,8 +104,8 @@ def get_newcomers(conn, rank, no=10, latest_only=True):
 
 
 def update_newcomers(conn, rank):
-    table = build_newcomers_table_name(rank)
-    df_newcomers = queries.get_newcomers_table(conn, table)
+    table_name = build_newcomers_table_name(rank)
+    df_newcomers = queries.get_newcomers_table(conn, table_name)
     coinmarketcap = Market()
     df_ret_val = df_newcomers.copy()
     for coin in df_newcomers['id']:
@@ -116,4 +116,5 @@ def update_newcomers(conn, rank):
         df_ret_val['percent_change_24h'].iloc[index] = current_results[0]['percent_change_24h']
         highest_rank = queries.get_highest_rank_for_coin(conn, coin)
         df_ret_val['highest_rank'].iloc[index] = highest_rank
+    create_table(df_ret_val, table_name, conn, if_exists='replace', index=False)
     return df_ret_val
