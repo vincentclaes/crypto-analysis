@@ -100,7 +100,7 @@ def get_marketcap_per_day(conn, rank=200):
 
 def get_newcomers(conn, rank=100, no=10):
     cur = conn.cursor()
-    cur.execute("SELECT * FROM newcomers_top{} limit {}".format(rank, no))
+    cur.execute("SELECT * FROM newcomers_top{} ORDER BY date DESC limit {}".format(rank, no))
     df = pd.DataFrame(cur.fetchall(), columns=[element[0] for element in cur.description])
     return df
 
