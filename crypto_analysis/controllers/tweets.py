@@ -59,13 +59,14 @@ def tweet(ids=[], rank=100):
     logging.info('following coins are eligable for tweets in rank {} : {}'.format(rank, ids))
     coinmarketcap = Market()
     tokens = get_tokens()
-    for id_ in ids:
-        coin_data = coinmarketcap.ticker(id_)
-        name = coin_data[0].get('name')
-        tweet_id = get_tweet_id(id_)
-        twitter = Twython(**tokens)
-        text = '{} is a newcomer in the top {} coins for the first time ever. Congratulations {} !. ' \
-               '\n http://www.deltacryptoclub.com/ \n #cryptocurrencies'.format(name, rank, tweet_id)
-        logging.info('tweet : {}'.format(text))
-        response = twitter.update_status(status=text)
-        logging.info(response)
+    if ids:
+        for id_ in ids:
+            coin_data = coinmarketcap.ticker(id_)
+            name = coin_data[0].get('name')
+            tweet_id = get_tweet_id(id_)
+            twitter = Twython(**tokens)
+            text = '{} is a newcomer in the top {} coins for the first time ever. Congratulations {} !. ' \
+                   '\n http://www.deltacryptoclub.com/ \n #cryptocurrencies'.format(name, rank, tweet_id)
+            logging.info('tweet : {}'.format(text))
+            response = twitter.update_status(status=text)
+            logging.info(response)
