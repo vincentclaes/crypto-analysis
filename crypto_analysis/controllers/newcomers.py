@@ -96,11 +96,12 @@ def get_newcomers(conn, rank, no=10, latest_only=True):
     df_newcomers = pd.DataFrame(newcomers.get('newcomers'))
     logging.info('{}'.format(df_newcomers.to_string()))
     if df_newcomers.empty:
-        return ''
+        print ''
+        return
     logging.info('{} newcomers found'.format(df_newcomers.shape[0]))
     create_newcomers_table(df_newcomers, rank, conn, latest_only)
     logging.info('done.')
-    return ' '.join([newcomer.get('id') for newcomer in newcomers.get('newcomers')])
+    print ' '.join([newcomer.get('id') for newcomer in newcomers.get('newcomers')])
 
 
 def update_newcomers(conn, rank):
