@@ -21,7 +21,9 @@ def _get_newcomer_for_uuid(conn, uuid, rank):
 def _get_uuids(conn, rank, latest_only):
     table_name = build_newcomers_table_name(rank)
     if latest_only and queries.table_exists(conn, table_name):
-        latest_uuid = queries.get_max_uuid_from_newcomers(conn, table_name)
+        latest_uuid = queries.get_max_uuid(conn)
+        # latest_uuid = queries.get_max_uuid_from_newcomers(conn, table_name)
+        # latest_uuid = queries.get_max_uuid_from_newcomers(conn, table_name)
         logging.info('latest uuid is {}'.format(latest_uuid))
         return [latest_uuid]
         # return queries.get_unique_uuids_above_latest_newcomer_uuid(conn, latest_uuid, rank)
