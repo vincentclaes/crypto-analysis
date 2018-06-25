@@ -22,7 +22,9 @@ def _get_uuids(conn, rank, latest_only):
     table_name = build_newcomers_table_name(rank)
     if latest_only and queries.table_exists(conn, table_name):
         latest_uuid = queries.get_max_uuid_from_newcomers(conn, table_name)
-        return queries.get_unique_uuids_above_latest_newcomer_uuid(conn, latest_uuid, rank)
+        logging.info('latest uuid is {}'.format(latest_uuid))
+        return [latest_uuid]
+        # return queries.get_unique_uuids_above_latest_newcomer_uuid(conn, latest_uuid, rank)
     return queries.get_uuids(conn)
 
 
@@ -96,13 +98,18 @@ def get_newcomers(conn, rank, no=10, latest_only=True):
     df_newcomers = pd.DataFrame(newcomers.get('newcomers'))
     logging.info('{}'.format(df_newcomers.to_string()))
     if df_newcomers.empty:
+        # we print this so that airflow xcom can read this>
+        # not the best way though ...
         print ''
         return
     logging.info('{} newcomers found'.format(df_newcomers.shape[0]))
     create_newcomers_table(df_newcomers, rank, conn, latest_only)
     logging.info('done.')
-    print ' '.join([newcomer.get('id') for newcomer in newcomers.get('newcomers')])
-
+    newcomers_list = ' '.join([newcomer.get('id') for newcomer in newcomers.get('newcomers')])
+    # we print this so that airflow xcom can read this>
+    # not the best way though ...
+    print newcomers_list
+    return newcomers_list
 
 def update_newcomers(conn, rank):
     table_name = build_newcomers_table_name(rank)
