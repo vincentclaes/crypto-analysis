@@ -66,8 +66,8 @@ def tweet(ids=[], rank=100):
             tweet_id = get_tweet_id(id_)
             twitter = Twython(**tokens)
             text = '{} is a newcomer in the top {} coins for the first time ever. Congratulations {} ! ' \
-                   '\n more newcomers on http://www.deltacryptoclub.com/ \n #cryptocurrencies #cryptonewcomers #cryptonewcomerstop{}'.format(
-                name, rank, tweet_id, rank)
+                   '\n #cryptocurrencies #cryptonewcomers #cryptonewcomerstop{} ' \
+                   '\n http://www.deltacryptoclub.com'.format(name, rank, tweet_id, rank)
             logging.info('tweet : {}'.format(text))
             response = twitter.update_status(status=text)
             logging.info(response)
