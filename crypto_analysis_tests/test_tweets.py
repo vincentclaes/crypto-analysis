@@ -17,6 +17,18 @@ class TestTweets(unittest.TestCase):
         m_status.return_value = 'a response'
         tweets.tweet()
 
+    def test_get_tweet(self):
+        list_ = ['name', 'tweet_id']
+        _exception = None
+        try:
+            tweets.get_tweet(50, **dict(zip(list_, list_)))
+            tweets.get_tweet(100, **dict(zip(list_, list_)))
+            tweets.get_tweet(200, **dict(zip(list_, list_)))
+        except Exception as e:
+            _exception = e
+        finally:
+            self.assertIsNone(_exception)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,6 +1,7 @@
 import ConfigParser
 import logging
 import os
+import random
 import sys
 from os.path import expanduser
 
@@ -8,6 +9,33 @@ import requests
 from bs4 import BeautifulSoup
 from coinmarketcap import Market
 from twython import Twython
+
+
+def get_tweet(rank, **kwargs):
+    default_tweet = '{} is a #cryptonewcomer in the top {} coins for the first time ever. Congratulations {} !' \
+                    '\nfollow @DeltaCryptoClu2 to know more newcomers'.format(kwargs.get('name'), kwargs.get('rank'),
+                                                                              kwargs.get('tweet_id'))
+
+    n50_1 = '{} is now in the top {} for the first time ever! {} is playing with the big boys now ... ' \
+            '\n#cryptonewcomer\ndeltacryptoclub.com'.format(kwargs.get('name'), kwargs.get('rank'),
+                                                            kwargs.get('tweet_id'))
+
+    n200_1 = '{} just made it in the top {}. {} is steadily coming out of the dark and making a name' \
+             '\n#cryptonewcomer\ndeltacryptoclub.com'.format(kwargs.get('name'), kwargs.get('rank'),
+                                                             kwargs.get('tweet_id'))
+
+    n100_1 = '{} just crossed the top {} of coinmarketcap coins. {} things are getting serious' \
+             '\n#cryptonewcomer\ndeltacryptoclub.com'.format(kwargs.get('name'), kwargs.get('rank'),
+                                                             kwargs.get('tweet_id'))
+
+    tweets = {
+        50: [default_tweet, n50_1],
+        100: [default_tweet, n100_1],
+        200: [default_tweet, n200_1]
+    }
+
+    tweets_for_rank = tweets.get(rank, default_tweet)
+    return random.choice(tweets_for_rank)
 
 
 def get_tweet_id(id_):
@@ -65,8 +93,8 @@ def tweet(ids=[], rank=100):
             name = coin_data[0].get('name')
             tweet_id = get_tweet_id(id_)
             twitter = Twython(**tokens)
-            text = '{} is a #cryptonewcomer in the top {} coins for the first time ever. Congratulations {} !' \
-                   '\nfollow @DeltaCryptoClu2 to know more newcomers'.format(name, rank, tweet_id)
+            kwargs = {'name': name, 'tweet_id': tweet_id}
+            text = get_tweet(rank, **kwargs)
             logging.info('tweet : {}'.format(text))
             response = twitter.update_status(status=text)
             logging.info(response)
