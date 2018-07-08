@@ -13,19 +13,19 @@ from twython import Twython
 
 def get_tweet(rank, **kwargs):
     default_tweet = '{} is a #cryptonewcomer in the top {} coins for the first time ever. Congratulations {} !' \
-                    '\nfollow @DeltaCryptoClu2 to know more newcomers'.format(kwargs.get('name'), kwargs.get('rank'),
+                    '\nfollow @DeltaCryptoClu2 to know more newcomers'.format(kwargs.get('name'), rank,
                                                                               kwargs.get('tweet_id'))
 
     n50_1 = '{} is now in the top {} for the first time ever! {} is playing with the big boys now ... ' \
-            '\n#cryptonewcomer\ndeltacryptoclub.com'.format(kwargs.get('name'), kwargs.get('rank'),
+            '\n#cryptonewcomer\ndeltacryptoclub.com'.format(kwargs.get('name'), rank,
                                                             kwargs.get('tweet_id'))
 
     n200_1 = '{} just made it in the top {}. {} is steadily coming out of the dark and making a name' \
-             '\n#cryptonewcomer\ndeltacryptoclub.com'.format(kwargs.get('name'), kwargs.get('rank'),
+             '\n#cryptonewcomer\ndeltacryptoclub.com'.format(kwargs.get('name'), rank,
                                                              kwargs.get('tweet_id'))
 
     n100_1 = '{} just crossed the top {} of coinmarketcap coins. {} things are getting serious' \
-             '\n#cryptonewcomer\ndeltacryptoclub.com'.format(kwargs.get('name'), kwargs.get('rank'),
+             '\n#cryptonewcomer\ndeltacryptoclub.com'.format(kwargs.get('name'), rank,
                                                              kwargs.get('tweet_id'))
 
     tweets = {
