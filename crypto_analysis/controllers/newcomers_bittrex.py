@@ -22,6 +22,7 @@ def get_newcomers_bittrex(conn):
     newcomers = _get_newcomers(df_latest_data, df_local_data)
     if newcomers:
         _tweet_newcomers_bittrex(newcomers)
+        queries.create_table(df_latest_data, TABLE_NAME, conn, if_exists='replace', index=False)
 
 
 def _tweet_newcomers_bittrex(newcomers):
