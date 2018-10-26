@@ -21,8 +21,11 @@ def get_newcomers_bittrex(conn):
     df_local_data = _get_local_data(conn, df_latest_data)
     newcomers = _get_newcomers(df_latest_data, df_local_data)
     if newcomers:
+        logging.info('newcomers found ...')
         _tweet_newcomers_bittrex(newcomers)
         queries.create_table(df_latest_data, TABLE_NAME, conn, if_exists='replace', index=False)
+        return
+    logging.info('no newcomers found ...')
 
 
 def _tweet_newcomers_bittrex(newcomers):
