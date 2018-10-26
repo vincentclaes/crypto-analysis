@@ -2,9 +2,14 @@ import argparse
 import logging
 
 from crypto_analysis.controllers import newcomers
+from crypto_analysis.controllers import newcomers_bittrex
 from crypto_analysis.controllers import tweets
 from crypto_analysis.databases import Connection
 from crypto_analysis.databases import DB
+
+
+def get_newcomers_bittrex(args):
+    newcomers_bittrex.get_newcomers_bittrex(conn)
 
 
 def get_newcomers(args):
@@ -41,6 +46,9 @@ if __name__ == '__main__':
     get_newcomers_parser.add_argument("-r", "--rank", help="rank you want to use", type=int, required=True)
     get_newcomers_parser.add_argument("-i", "--ids", help="ids you want to tweet", nargs='*')
     get_newcomers_parser.set_defaults(func=tweet)
+
+    update_newcomers_parser = subparsers.add_parser("newcomers_bittrex")
+    update_newcomers_parser.set_defaults(func=get_newcomers_bittrex)
 
     args = parser.parse_args()
     args.func(args)

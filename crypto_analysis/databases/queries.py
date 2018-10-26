@@ -4,6 +4,12 @@ from sqlite3 import OperationalError
 import pandas as pd
 
 
+def create_table(df, table_name, conn, if_exists, index=True):
+    logging.info('dumping data in table {}'.format(table_name))
+    df.to_sql(table_name, conn, if_exists=if_exists, index=index)
+    logging.info('dump ok.')
+
+
 def table_exists(conn, table_name):
     cur = conn.cursor()
     cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='{}'".format(table_name))
@@ -120,7 +126,7 @@ def drop_table(conn, table_name):
     cur.execute("DROP {}".format(table_name))
 
 
-def get_newcomers_table(conn, table):
+def get_table(conn, table):
     cur = conn.cursor()
     cur.execute("SELECT * FROM {}".format(table))
     df = pd.DataFrame(cur.fetchall(), columns=[element[0] for element in cur.description])

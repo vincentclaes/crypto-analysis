@@ -77,6 +77,12 @@ def config_mapping(config, section):
     return dict1
 
 
+def post_tweet(text):
+    tokens = get_tokens()
+    twitter = Twython(**tokens)
+    twitter.update_status(status=text)
+
+
 def tweet(ids=[], rank=100):
     """
     for each id we get the twitter name and tweet about them.
