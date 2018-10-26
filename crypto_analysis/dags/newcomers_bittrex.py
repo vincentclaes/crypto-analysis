@@ -2,12 +2,11 @@ import os
 from datetime import timedelta
 
 import airflow
-import pandas as pd
-import requests
+from airflow.contrib.hooks import SSHHook
+from airflow.contrib.operators.ssh_execute_operator import SSHExecuteOperator
 from airflow.models import DAG
-from airflow.operators import PythonOperator
 
-from crypto_analysis.databases import queries
+sshHook = SSHHook(conn_id="delta-crypto")
 
 args = {
     'owner': 'airflow',
@@ -23,25 +22,9 @@ dag = DAG(
     catchup=False
 )
 
-
-def newcomers_bittrex():
-    data = get_bittrex_data()
-    df_latest = pd.read_json(data)
-
-    local_data = get_local_data()
-
-
-def get_local_data(df_latest):
-    df = queries.get_table('bittrex')
-
-
-def get_bittrex_data():
-    url = "https://bittrex.com/api/v1.1/public/getmarkets"
-    return requests.request("GET", url)
-
-
-run_this = PythonOperator(
-    task_id='print_the_context',
-    provide_context=True,
-    python_callable=newcomers_bittrex,
+newcomers_bittrex = SSHExecuteOperator(
+    task_id="newcomers_bittrex",
+    bash_command="""sudo python /home/ec2-user/projects/crypto-analysis/entry.py newcomers_bittrex""",
+    ssh_hook=sshHook,
+    xcom_push=True,
     dag=dag)
