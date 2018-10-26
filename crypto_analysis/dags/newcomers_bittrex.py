@@ -17,7 +17,7 @@ DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")  # ai
 
 dag = DAG(
     dag_id=DAG_ID, default_args=args,
-    schedule_interval="* * * * *",
+    schedule_interval="*/5 * * * *",
     dagrun_timeout=timedelta(minutes=60),
     catchup=False
 )
