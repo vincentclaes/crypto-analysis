@@ -116,7 +116,8 @@ def update_newcomers(conn, rank):
         index = df_ret_val.index[df_ret_val['id'] == coin][0]
         logging.info('{} is located on index {}'.format(coin, index))
         current_results = coinmarketcap.ticker(coin)
-        if current_results.get("error"):
+        if isinstance(current_results, dict):
+            logging.info(current_results, 'we will continue')
             continue
         df_ret_val['current_rank'].iloc[index] = current_results[0]['rank']
         df_ret_val['percent_change_24h'].iloc[index] = current_results[0]['percent_change_24h']
