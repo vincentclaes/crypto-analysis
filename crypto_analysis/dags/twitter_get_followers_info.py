@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from pprint import pprint
 
 from airflow.models import DAG
+from airflow.models import Variable
 from airflow.operators import PythonOperator
 from builtins import range
 
@@ -13,7 +14,8 @@ seven_days_ago = datetime.combine(
     datetime.today() - timedelta(7), datetime.min.time())
 MAX_COUNT = 3000
 COUNT = 200
-NAME = 'DRAKE'
+NAMES = Variable.get("twitter_users")
+
 args = {
     'owner': 'airflow',
     'start_date': seven_days_ago,
@@ -45,24 +47,24 @@ def get_followers_info(name, cursor, count):
     return json.loads(response.content).get('followers').get('next_cursor')
 
 
-def get_paged_followers_info(name, count, max_count):
+def get_paged_followers_info(names, count, max_count, *args, **kwargs):
     iterations = max_count / count
-    cursor = 0
-    print('get user info for : {}'.format(name))
-    for i in range(iterations):
-        if i >= max_count:
-            break
-        time.sleep(10)
-        print('running for cursor : {}'.format(cursor))
-        response = get_followers_info(cursor, count)
-        pprint(response)
-        cursor = response.get('followers').get('next_cursor')
+    for name in names:  
+        cursor = -1 # default value to get the first list of users
+        print('get user info for : {}'.format(name))
+        for i in range(iterations):
+            if i >= max_count:
+                break
+            time.sleep(10)
+            print('running for cursor : {}'.format(cursor))
+            cursor = get_followers_info(name, cursor, count)
 
 
 PythonOperator(
     task_id='get_paged_followers_info',
     python_callable=get_paged_followers_info,
-    op_kwargs={'count': COUNT, 'max_count': MAX_COUNT, 'name': NAME},
+    op_kwargs={'count': COUNT, 'max_count': MAX_COUNT, 'name': NAMES},
     dag=dag,
     xcom_push=True,
     provide_context=True)
+
