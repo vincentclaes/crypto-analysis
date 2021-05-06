@@ -7,7 +7,7 @@ click==6.6
 coinmarketcap==4.2.1
 Flask==0.12.2
 Flask-Caching==1.4.0
-Flask-Cors==3.0.3
+Flask-Cors==3.0.9
 flask-jsondash==6.2.3
 funcsigs==1.0.2
 futures==3.2.0
