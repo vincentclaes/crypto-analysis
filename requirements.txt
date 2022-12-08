@@ -1,7 +1,7 @@
 BeautifulSoup==3.2.1
 beautifulsoup4==4.6.0
 Cerberus==1.2
-certifi==2018.4.16
+certifi==2022.12.7
 chardet==3.0.4
 click==6.6
 coinmarketcap==4.2.1
